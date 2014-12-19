@@ -19,7 +19,11 @@ RSpec.describe "a class using ModelAttributes" do
     it "responds to #changes"
     describe "an integer attribute" do
       describe "#id=" do
-        it "stores an integer"
+        it "stores an integer" do
+          user.id = 3
+          expect(user.id).to eq(3)
+        end
+
         it "raises when passed a float"
         it "parses and integer string"
         it "raises if passed a string it can't parse"
