@@ -6,9 +6,11 @@ class User
   attribute :created_at, :datetime
 end
 
-RSpec.describe "a class using attributes" do
+RSpec.describe "a class using ModelAttributes" do
   describe ".attributes" do
-    it "returns an array of attribute names as symbols"
+    it "returns an array of attribute names as symbols" do
+      expect(User.attributes).to eq([:id, :paid, :name, :created_at])
+    end
   end
 
   describe "an instance of the class" do
