@@ -24,9 +24,24 @@ RSpec.describe "a class using ModelAttributes" do
           expect(user.id).to eq(3)
         end
 
-        it "raises when passed a float"
-        it "parses and integer string"
-        it "raises if passed a string it can't parse"
+        it "stores an integer passed as a float" do
+          user.id = 3.0
+          expect(user.id).to eq(3)
+        end
+
+        it "raises when passed a float with non-zero decimal part" do
+          expect { user.id = 3.3 }.to raise_error
+        end
+
+        it "parses an integer string" do
+          user.id = '3'
+          expect(user.id).to eq(3)
+        end
+
+        it "raises if passed a string it can't parse" do
+          expect { user.id = '3a' }.to raise_error
+        end
+
         it "stores nil"
       end
     end

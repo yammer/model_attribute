@@ -25,9 +25,9 @@ module ModelAttributes
   end
 
   module InstanceMethods
-    def write_attribute(name, value, type)
+    def write_attribute(name, value, type = nil)
       name = name.to_s
-      #value = cast(value, type)
+      value = cast(value, type) if type
       return if value == instance_variable_get("@#{name}")
 
       if changes.has_key? name
@@ -65,6 +65,34 @@ module ModelAttributes
       end
 
       Oj.dump(hash_to_serialize, mode: :strict)
+    end
+
+    def cast(value, type)
+      return nil if value.nil?
+
+      case type
+      when :integer
+        int = Integer(value)
+        float = Float(value)
+        raise "Can't cast #{value.inspect} to an integer without loss of precision" unless int == float
+        int
+      when :boolean
+        if !!value == value
+          value
+        elsif value == 't'
+          true
+        elsif value == 'f'
+          false
+        else
+          raise "Can't cast #{value.inspect} to boolean"
+        end
+      when :datetime
+        Time.at(Float(value)) rescue Time.parse(value)
+      when :string
+        String(value)
+      else
+        raise "Unsupported type #{type.inspect}"
+      end
     end
   end
 end
