@@ -42,7 +42,11 @@ RSpec.describe "a class using ModelAttributes" do
           expect { user.id = '3a' }.to raise_error
         end
 
-        it "stores nil"
+        it "stores nil" do
+          user.id = 3
+          user.id = nil
+          expect(user.id).to be_nil
+        end
       end
     end
   end
