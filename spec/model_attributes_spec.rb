@@ -109,6 +109,41 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "a datetime attribute (created_at)" do
+      let(:now_time) { Time.now }
+
+      it "is nil when unset" do
+        expect(user.created_at).to be_nil
+      end
+
+      it "stores a Time object" do
+        user.created_at = now_time
+        expect(user.created_at).to eq(now_time)
+      end
+
+      it "parses floats as seconds past the epoch" do
+        user.created_at = now_time.to_f
+        # Going via float loses precision, so use be_within
+        expect(user.created_at).to be_within(0.0001).of(now_time)
+        expect(user.created_at).to be_a_kind_of(Time)
+      end
+
+      it "parses strings to date/times" do
+        user.created_at = "2014-12-25 14:00:00 +0100"
+        expect(user.created_at).to eq(Time.new(2014, 12, 25, 13, 00, 00))
+      end
+
+      it "raises for unparseable strings" do
+        expect { user.created_at = "Today, innit?" }.to raise_error
+      end
+
+      it "stores nil" do
+        user.created_at = now_time
+        user.created_at = nil
+        expect(user.created_at).to be_nil
+      end
+    end
+
     describe "#changes" do
       let(:changes) { user.changes }
 

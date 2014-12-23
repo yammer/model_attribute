@@ -98,7 +98,14 @@ module ModelAttributes
           raise "Can't cast #{value.inspect} to boolean"
         end
       when :datetime
-        Time.at(Float(value)) rescue Time.parse(value)
+        case value
+        when Time
+          value
+        when Numeric
+          Time.at(Float(value))
+        else
+          Time.parse(value)
+        end
       when :string
         String(value)
       else
