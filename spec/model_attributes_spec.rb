@@ -60,9 +60,10 @@ RSpec.describe "a class using ModelAttributes" do
 
       context "when an attribute is set via a writer method" do
         let(:user) { User.new.tap { |u| u.id= 3 } }
+        let(:changes) { user.changes }
 
-        it "has an entry for key 'id'" do
-          expect(user.changes['id']).to_not be_nil
+        it "has an entry for key 'id' => [nil, 3]" do
+          expect(changes).to include('id' => [nil, 3])
         end
       end
     end
