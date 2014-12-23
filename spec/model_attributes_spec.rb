@@ -55,16 +55,24 @@ RSpec.describe "a class using ModelAttributes" do
       let(:changes) { user.changes }
 
       context "for a model instance created with no attributes" do
-        it "returns {}" do
-          expect(changes).to eq({})
+        it "is empty" do
+          expect(changes).to be_empty
         end
       end
 
       context "when an attribute is set via a writer method" do
         before(:each) { user.id = 3 }
 
-        it "has an entry for key 'id' => [nil, 3]" do
+        it "has an entry from attribute name to [old, new] pair" do
           expect(changes).to include(:id => [nil, 3])
+        end
+
+        context "when an attribute is set again" do
+          before(:each) { user.id = 5 }
+
+          it "shows the latest value for the attribute" do
+            expect(changes).to include(:id => [nil, 5])
+          end
         end
 
         context "when an attribute is set back to its original value" do
