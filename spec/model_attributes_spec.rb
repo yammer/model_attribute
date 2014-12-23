@@ -87,6 +87,28 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "a string attribute (name)" do
+      it "is nil when unset" do
+        expect(user.name).to be_nil
+      end
+
+      it "stores a string" do
+        user.name = 'Fred'
+        expect(user.name).to eq('Fred')
+      end
+
+      it "casts an integer to a string" do
+        user.name = 3
+        expect(user.name).to eq('3')
+      end
+
+      it "stores nil" do
+        user.name = 'Fred'
+        user.name = nil
+        expect(user.name).to be_nil
+      end
+    end
+
     describe "#changes" do
       let(:changes) { user.changes }
 
