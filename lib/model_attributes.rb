@@ -27,7 +27,7 @@ module ModelAttributes
 
   module InstanceMethods
     def write_attribute(name, value, type = nil)
-      name = name.to_s
+      name = name.to_sym
       value = cast(value, type) if type
       return if value == read_attribute(name)
 

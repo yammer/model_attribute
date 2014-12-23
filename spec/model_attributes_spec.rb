@@ -64,14 +64,14 @@ RSpec.describe "a class using ModelAttributes" do
         before(:each) { user.id = 3 }
 
         it "has an entry for key 'id' => [nil, 3]" do
-          expect(changes).to include('id' => [nil, 3])
+          expect(changes).to include(:id => [nil, 3])
         end
 
         context "when an attribute is set back to its original value" do
           before(:each) { user.id = nil }
 
           it "does not have an entry for the attribute" do
-            expect(changes).to_not include('id')
+            expect(changes).to_not include(:id)
           end
         end
       end
