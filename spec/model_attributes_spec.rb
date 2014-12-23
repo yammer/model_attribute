@@ -50,5 +50,12 @@ RSpec.describe "a class using ModelAttributes" do
         expect(user.id).to be_nil
       end
     end
+
+    describe "#changes" do
+      it "returns {} when no attributes have been set" do
+        expect(user.changes).to eq({})
+      end
+
+    end
   end
 end
