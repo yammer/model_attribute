@@ -15,7 +15,7 @@ module ModelAttributes
       end
 
       def #{name}
-        @#{name}
+        read_attribute(#{name.inspect})
       end
     CODE
   end
