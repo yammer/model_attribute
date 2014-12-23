@@ -57,6 +57,11 @@ module ModelAttributes
       end
     end
 
+    def ==(other)
+      self.class == other.class && attributes == other.attributes
+    end
+    alias_method :eql?, :==
+
     def changes
       @changes ||= {} #HashWithIndifferentAccess.new
     end

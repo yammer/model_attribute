@@ -84,5 +84,25 @@ RSpec.describe "a class using ModelAttributes" do
         end
       end
     end
+
+    describe "#==" do
+      it "returns false if the attributes are different" do
+        u1 = User.new.tap { |u| u.id = 1 }
+        u2 = User.new.tap { |u| u.id = 2 }
+        expect(u1 == u2).to eq(false)
+      end
+
+      it "returns false if different attrbutes are set" do
+        u1 = User.new.tap { |u| u.id = 1 }
+        u2 = User.new
+        expect(u1 == u2).to eq(false)
+      end
+
+      it "returns true if the attributes are the same" do
+        u1 = User.new.tap { |u| u.id = 1 }
+        u2 = User.new.tap { |u| u.id = 1 }
+        expect(u1 == u2).to eq(true)
+      end
+    end
   end
 end
