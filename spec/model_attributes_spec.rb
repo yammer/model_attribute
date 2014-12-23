@@ -51,6 +51,42 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "a boolean attribute (paid)" do
+      it "is nil when unset" do
+        expect(user.paid).to be_nil
+      end
+
+      it "stores true" do
+        user.paid = true
+        expect(user.paid).to eq(true)
+      end
+
+      it "stores false" do
+        user.paid = false
+        expect(user.paid).to eq(false)
+      end
+
+      it "parses 't' as true" do
+        user.paid = 't'
+        expect(user.paid).to eq(true)
+      end
+
+      it "parses 'f' as false" do
+        user.paid = 'f'
+        expect(user.paid).to eq(false)
+      end
+
+      it "raises if passed a string it can't parse" do
+        expect { user.paid = '3a' }.to raise_error
+      end
+
+      it "stores nil" do
+        user.paid = true
+        user.paid = nil
+        expect(user.paid).to be_nil
+      end
+    end
+
     describe "#changes" do
       let(:changes) { user.changes }
 
