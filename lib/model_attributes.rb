@@ -3,11 +3,12 @@ require "model_attributes/version"
 module ModelAttributes
   def self.extended(base)
     base.send(:include, InstanceMethods)
+    base.instance_variable_set('@attribute_names', [])
   end
 
   def attribute(name, type)
     name = name.to_sym
-    (@attribute_names ||= []) << name
+    @attribute_names << name
 
     self.class_eval(<<-CODE, __FILE__, __LINE__ + 1)
       def #{name}=(value)
