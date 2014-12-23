@@ -85,23 +85,43 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
-    describe "#==" do
-      it "returns false if the attributes are different" do
-        u1 = User.new.tap { |u| u.id = 1 }
-        u2 = User.new.tap { |u| u.id = 2 }
-        expect(u1 == u2).to eq(false)
+    describe "equality" do
+      let(:u1) { User.new.tap { |u| u.id = 1 } }
+
+      context "for models with different attribute values" do
+        let(:u2) { User.new.tap { |u| u.id = 2 } }
+
+        it "#== returns false" do
+          expect(u1).to_not eq(u2)
+        end
+
+        it "#eql? returns false" do
+          expect(u1).to_not eql(u2)
+        end
       end
 
-      it "returns false if different attrbutes are set" do
-        u1 = User.new.tap { |u| u.id = 1 }
-        u2 = User.new
-        expect(u1 == u2).to eq(false)
+      context "for models with different attributes set" do
+        let(:u2) { User.new }
+
+        it "#== returns false" do
+          expect(u1).to_not eq(u2)
+        end
+
+        it "#eql? returns false" do
+          expect(u1).to_not eql(u2)
+        end
       end
 
-      it "returns true if the attributes are the same" do
-        u1 = User.new.tap { |u| u.id = 1 }
-        u2 = User.new.tap { |u| u.id = 1 }
-        expect(u1 == u2).to eq(true)
+      context "for models with the same attributes set to the same values" do
+        let(:u2) { User.new.tap { |u| u.id = 1 } }
+
+        it "#== returns true" do
+          expect(u1).to eq(u2)
+        end
+
+        it "#eql? returns true" do
+          expect(u1).to eql(u2)
+        end
       end
     end
   end
