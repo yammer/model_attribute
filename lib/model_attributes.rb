@@ -31,7 +31,7 @@ module ModelAttributes
       return if value == read_attribute(name)
 
       if changes.has_key? name
-        original = changes[name]
+        original = changes[name].first
       else
         original = read_attribute(name)
       end
