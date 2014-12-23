@@ -28,12 +28,12 @@ module ModelAttributes
     def write_attribute(name, value, type = nil)
       name = name.to_s
       value = cast(value, type) if type
-      return if value == instance_variable_get("@#{name}")
+      return if value == read_attribute(name)
 
       if changes.has_key? name
         original = changes[name]
       else
-        original = instance_variable_get("@#{name}")
+        original = read_attribute(name)
       end
 
       if original == value
@@ -43,6 +43,11 @@ module ModelAttributes
       end
 
       original = instance_variable_set("@#{name}", value)
+    end
+
+    def read_attribute(name)
+      ivar_name = "@#{name}"
+      instance_variable_get(ivar_name) if instance_variable_defined?(ivar_name)
     end
 
     def attributes
