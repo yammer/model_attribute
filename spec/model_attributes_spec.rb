@@ -52,10 +52,19 @@ RSpec.describe "a class using ModelAttributes" do
     end
 
     describe "#changes" do
-      it "returns {} when no attributes have been set" do
-        expect(user.changes).to eq({})
+      context "for a model instance created with no attributes" do
+        it "returns {}" do
+          expect(user.changes).to eq({})
+        end
       end
 
+      context "when an attribute is set via a writer method" do
+        let(:user) { User.new.tap { |u| u.id= 3 } }
+
+        it "has an entry for key 'id'" do
+          expect(user.changes['id']).to_not be_nil
+        end
+      end
     end
   end
 end
