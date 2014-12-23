@@ -178,6 +178,24 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#attributes" do
+      let(:time_now) { Time.now }
+
+      before(:each) do
+        user.id = 1
+        user.paid = true
+        user.created_at = time_now
+      end
+
+      it "returns a hash including each set attribute" do
+        expect(user.attributes).to include(id: 1, paid: true, created_at: time_now)
+      end
+
+      it "returns a hash with a nil value for each unset attribute" do
+        expect(user.attributes).to include(name: nil)
+      end
+    end
+
     describe "equality" do
       let(:u1) { User.new.tap { |u| u.id = 1 } }
 
