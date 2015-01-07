@@ -101,6 +101,8 @@ module ModelAttributes
         case value
         when Time
           value
+        when Date, DateTime
+          value.to_time
         when Numeric
           Time.at(Float(value))
         else

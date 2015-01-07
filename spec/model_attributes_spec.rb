@@ -137,6 +137,16 @@ RSpec.describe "a class using ModelAttributes" do
         expect { user.created_at = "Today, innit?" }.to raise_error
       end
 
+      it "converts Dates to Time" do
+        user.created_at = Date.parse("2014-12-25")
+        expect(user.created_at).to eq(Time.new(2014, 12, 25, 00, 00, 00))
+      end
+
+      it "converts DateTime to Time" do
+        user.created_at = Date.parse("2014-12-25")
+        expect(user.created_at).to eq(Time.new(2014, 12, 25, 00, 00, 00))
+      end
+
       it "stores nil" do
         user.created_at = now_time
         user.created_at = nil
