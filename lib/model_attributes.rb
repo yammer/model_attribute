@@ -53,7 +53,7 @@ module ModelAttributes
 
     def attributes
       self.class.attributes.each_with_object({}) do |name, attributes|
-        attributes[name] = send(name)
+        attributes[name] = read_attribute(name)
       end
     end
 
