@@ -43,7 +43,7 @@ module ModelAttributes
         changes[name] = [original, value]
       end
 
-      original = instance_variable_set("@#{name}", value)
+      instance_variable_set("@#{name}", value)
     end
 
     def read_attribute(name)
