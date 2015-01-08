@@ -49,6 +49,11 @@ RSpec.describe "a class using ModelAttributes" do
         user.id = nil
         expect(user.id).to be_nil
       end
+
+      it "does not provide an id? method" do
+        expect(user).to_not respond_to(:id?)
+        expect { user.id? }.to raise_error(NoMethodError)
+      end
     end
 
     describe "a boolean attribute (paid)" do
@@ -85,6 +90,22 @@ RSpec.describe "a class using ModelAttributes" do
         user.paid = nil
         expect(user.paid).to be_nil
       end
+
+      describe "#paid?" do
+        it "returns false when unset" do
+          expect(user.paid?).to eq(false)
+        end
+
+        it "returns false for false attributes" do
+          user.paid = false
+          expect(user.paid?).to eq(false)
+        end
+
+        it "returns true for true attributes" do
+          user.paid = true
+          expect(user.paid?).to eq(true)
+        end
+      end
     end
 
     describe "a string attribute (name)" do
@@ -106,6 +127,11 @@ RSpec.describe "a class using ModelAttributes" do
         user.name = 'Fred'
         user.name = nil
         expect(user.name).to be_nil
+      end
+
+      it "does not provide a name? method" do
+        expect(user).to_not respond_to(:name?)
+        expect { user.name? }.to raise_error(NoMethodError)
       end
     end
 
@@ -151,6 +177,11 @@ RSpec.describe "a class using ModelAttributes" do
         user.created_at = now_time
         user.created_at = nil
         expect(user.created_at).to be_nil
+      end
+
+      it "does not provide a created_at? method" do
+        expect(user).to_not respond_to(:created_at?)
+        expect { user.created_at? }.to raise_error(NoMethodError)
       end
     end
 

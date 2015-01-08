@@ -26,6 +26,14 @@ module ModelAttributes
         !!changes[#{name.inspect}]
       end
     CODE
+
+    if type == :boolean
+      self.class_eval(<<-CODE, __FILE__, __LINE__ + 1)
+        def #{name}?
+          !!read_attribute(#{name.inspect})
+        end
+      CODE
+    end
   end
 
   def attributes
