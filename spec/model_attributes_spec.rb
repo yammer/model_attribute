@@ -179,8 +179,8 @@ RSpec.describe "a class using ModelAttributes" do
       end
 
       it "converts DateTime to Time" do
-        user.created_at = Date.parse("2014-12-25")
-        expect(user.created_at).to eq(Time.new(2014, 12, 25, 00, 00, 00))
+        user.created_at = DateTime.parse("2014-12-25 13:00:45")
+        expect(user.created_at).to eq(Time.new(2014, 12, 25, 13, 00, 45))
       end
 
       it "stores nil" do
