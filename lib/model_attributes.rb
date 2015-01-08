@@ -21,6 +21,10 @@ module ModelAttributes
       def #{name}
         read_attribute(#{name.inspect})
       end
+
+      def #{name}_changed?
+        !!changes[#{name.inspect}]
+      end
     CODE
   end
 

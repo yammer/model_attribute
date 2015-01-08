@@ -202,6 +202,22 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "id_changed?" do
+      context "with no changes" do
+        it "returns false" do
+          expect(user.id_changed?).to eq(false)
+        end
+      end
+
+      context "with changes" do
+        before(:each) { user.id = 3 }
+
+        it "returns true" do
+          expect(user.id_changed?).to eq(true)
+        end
+      end
+    end
+
     describe "#attributes" do
       let(:time_now) { Time.now }
 
