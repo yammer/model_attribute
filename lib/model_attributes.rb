@@ -1,8 +1,7 @@
 require "model_attributes/version"
+require "model_attributes/errors"
 
 module ModelAttributes
-  class InvalidAttributeName < StandardError; end
-
   def self.extended(base)
     base.send(:include, InstanceMethods)
     base.instance_variable_set('@attribute_names', [])
