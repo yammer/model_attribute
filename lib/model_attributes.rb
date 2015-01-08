@@ -1,14 +1,18 @@
 require "model_attributes/version"
 
 module ModelAttributes
+  class InvalidAttributeName < StandardError; end
+
   def self.extended(base)
     base.send(:include, InstanceMethods)
     base.instance_variable_set('@attribute_names', [])
+    base.instance_variable_set('@attribute_types', {})
   end
 
   def attribute(name, type)
     name = name.to_sym
     @attribute_names << name
+    @attribute_types[name] = type
 
     self.class_eval(<<-CODE, __FILE__, __LINE__ + 1)
       def #{name}=(value)
@@ -28,7 +32,13 @@ module ModelAttributes
   module InstanceMethods
     def write_attribute(name, value, type = nil)
       name = name.to_sym
-      value = cast(value, type) if type
+
+      # Don't want to expose attribute types as a method on the class, so access
+      # via a back door.
+      type ||= self.class.instance_variable_get('@attribute_types')[name]
+      raise InvalidAttributeName, "Invalid attribute name #{name.inspect}" unless type
+
+      value = cast(value, type)
       return if value == read_attribute(name)
 
       if changes.has_key? name

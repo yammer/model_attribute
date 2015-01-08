@@ -154,6 +154,19 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#write_attribute" do
+      it "does the same casting as using the writer method" do
+        user.write_attribute(:id, '3')
+        expect(user.id).to eq(3)
+      end
+
+      it "raises an error if passed an invalid attribute name" do
+        expect do
+          user.write_attribute(:spelling_mistake, '3')
+        end.to raise_error(ModelAttributes::InvalidAttributeName)
+      end
+    end
+
     describe "#changes" do
       let(:changes) { user.changes }
 
