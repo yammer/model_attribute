@@ -2,6 +2,8 @@ require "model_attributes/version"
 require "model_attributes/errors"
 
 module ModelAttributes
+  SUPPORTED_TYPES = [:integer, :boolean, :string, :datetime]
+
   def self.extended(base)
     base.send(:include, InstanceMethods)
     base.instance_variable_set('@attribute_names', [])
@@ -10,6 +12,9 @@ module ModelAttributes
 
   def attribute(name, type)
     name = name.to_sym
+    type = type.to_sym
+    raise UnsupportedTypeError.new(type) unless SUPPORTED_TYPES.include?(type)
+
     @attribute_names << name
     @attribute_types[name] = type
 

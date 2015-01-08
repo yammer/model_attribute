@@ -7,8 +7,8 @@ module ModelAttributes
 
   class UnsupportedTypeError < StandardError
     def initialize(type)
-      super("Unsupported type #{type.inspect}. " +
-            "Must be one of :integer, :boolean, :datetime, :string.")
+      types_list = ModelAttributes::SUPPORTED_TYPES.map(&:inspect).join(', ')
+      super "Unsupported type #{type.inspect}. Must be one of #{types_list}."
     end
   end
 end

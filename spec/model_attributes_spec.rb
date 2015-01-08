@@ -13,6 +13,16 @@ RSpec.describe "a class using ModelAttributes" do
     end
   end
 
+  describe "defining an attribute with an invalid type" do
+    it "raises an error" do
+      expect do
+        User.attribute :address, :custom_type
+      end.to raise_error(ModelAttributes::UnsupportedTypeError,
+                         "Unsupported type :custom_type. " +
+                         "Must be one of :integer, :boolean, :string, :datetime.")
+    end
+  end
+
   describe "an instance of the class" do
     let(:user) { User.new }
 
