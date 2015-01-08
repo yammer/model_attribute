@@ -3,7 +3,7 @@ class User
   attribute :id,         :integer
   attribute :paid,       :boolean
   attribute :name,       :string
-  attribute :created_at, :datetime
+  attribute :created_at, :time
 end
 
 RSpec.describe "a class using ModelAttributes" do
@@ -19,7 +19,7 @@ RSpec.describe "a class using ModelAttributes" do
         User.attribute :address, :custom_type
       end.to raise_error(ModelAttributes::UnsupportedTypeError,
                          "Unsupported type :custom_type. " +
-                         "Must be one of :integer, :boolean, :string, :datetime.")
+                         "Must be one of :integer, :boolean, :string, :time.")
     end
   end
 
@@ -145,7 +145,7 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
-    describe "a datetime attribute (created_at)" do
+    describe "a time attribute (created_at)" do
       let(:now_time) { Time.now }
 
       it "is nil when unset" do

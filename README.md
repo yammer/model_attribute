@@ -29,7 +29,7 @@ class User
   attribute :id,         :integer
   attribute :paid,       :boolean
   attribute :name,       :string
-  attribute :created_at, :datetime
+  attribute :created_at, :time
 end
 
 User.attributes # => [:id, :paid, :name, :created_at]
@@ -64,7 +64,7 @@ user.paid # => false
 user.paid = 't'
 user.paid # => true
 
-# A :datetime attribute
+# A :time attribute
 user.created_at = Time.now
 user.created_at # => 2015-01-08 15:57:05 +0000
 

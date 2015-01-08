@@ -2,7 +2,7 @@ require "model_attributes/version"
 require "model_attributes/errors"
 
 module ModelAttributes
-  SUPPORTED_TYPES = [:integer, :boolean, :string, :datetime]
+  SUPPORTED_TYPES = [:integer, :boolean, :string, :time]
 
   def self.extended(base)
     base.send(:include, InstanceMethods)
@@ -127,7 +127,7 @@ module ModelAttributes
         else
           raise "Can't cast #{value.inspect} to boolean"
         end
-      when :datetime
+      when :time
         case value
         when Time
           value
