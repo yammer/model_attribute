@@ -1,13 +1,107 @@
 # ModelAttributes
 
-Simple attributes for a non-ActiveRecord model.  Stores attributes in instance
-variables.
+Simple attributes for a non-ActiveRecord model.
+
+ - Stores attributes in instance variables.
+ - Type casting and checking.
+ - Simple dirty tracking.
+ - List attribute names and values.
+ - Handles integers, booleans, strings and times - a set of types that are very
+   easy to persist to and parse from JSON.
+
+Why not [Virtus][virtus-gem]?
+
+ - ModelAttributes includes dirty tracking, which Virtus doesn't support.
+ - Simple and fast
+
+Possible future features, possibly out of scope:
 
  - Set attributes by passing a hash to `new`.
  - Set attributes by passing a JSON string to `new`.
- - Type casting and checking.
- - Simple dirty tracking.
- - Methods to read back the attributes on an object, including as a JSON string.
+ - Attributes to a JSON string.
+
+[virtus-gem]:https://github.com/solnic/virtus
+
+## Usage
+
+```ruby
+class User
+  extend ModelAttributes
+  attribute :id,         :integer
+  attribute :paid,       :boolean
+  attribute :name,       :string
+  attribute :created_at, :datetime
+end
+
+User.attributes # => [:id, :paid, :name, :created_at]
+user = User.new
+
+user.attributes # => {:id=>nil, :paid=>nil, :name=>nil, :created_at=>nil}
+
+# An integer attribute
+user.id # => nil
+
+user.id = 3
+user.id # => 3
+
+# Stores values that convert cleanly to an integer
+user.id = '5'
+user.id # => 5
+
+# Protects you against nonsense assignment
+user.id = '5error'
+ArgumentError: invalid value for Integer(): "5error"
+
+# A boolean attribute
+user.paid # => nil
+user.paid = true
+
+# Booleans also define a predicate method (ending in '?')
+user.paid?  # => true
+
+# Conversion from strings used by databases.
+user.paid = 'f'
+user.paid # => false
+user.paid = 't'
+user.paid # => true
+
+# A :datetime attribute
+user.created_at = Time.now
+user.created_at # => 2015-01-08 15:57:05 +0000
+
+# Also converts from other reasonable time formats
+user.created_at = "2014-12-25 14:00:00 +0100"
+user.created_at # => 2014-12-25 13:00:00 +0000
+user.created_at = Date.parse('2014-01-08')
+user.created_at # => 2014-01-08 00:00:00 +0000
+user.created_at = DateTime.parse("2014-12-25 13:00:45")
+user.created_at # => 2014-12-25 13:00:45 +0000
+# Convert from seconds since the epoch - a very efficient way of serializing and
+# deserializing.
+user.created_at = Time.now.to_f
+user.created_at # => 2015-01-08 16:23:02 +0000
+
+# read_attribute and write_attribute methods
+user.read_attribute(:created_at)
+user.write_attribute(:name, 'Fred')
+
+user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-08 15:57:05 +0000}
+
+# Change tracking
+user.changes # => {:id=>[nil, 5], :paid=>[nil, true], :created_at=>[nil, 2015-01-08 15:57:05 +0000], :name=>[nil, "Fred"]}
+user.name_changed?  # => true
+
+# Equality of all the attribute values match
+another = User.new
+another.id = 5
+another.paid = true
+another.created_at = user.created_at
+another.name = 'Fred'
+
+user == another   # => true
+user === another  # => true
+user.eql? another # => true
+```
 
 ## Installation
 
@@ -24,10 +118,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install model_attributes
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 
