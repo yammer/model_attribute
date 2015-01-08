@@ -4,15 +4,14 @@ Simple attributes for a non-ActiveRecord model.
 
  - Stores attributes in instance variables.
  - Type casting and checking.
- - Simple dirty tracking.
+ - Dirty tracking.
  - List attribute names and values.
  - Handles integers, booleans, strings and times - a set of types that are very
    easy to persist to and parse from JSON.
 
-Why not [Virtus][virtus-gem]?
-
- - ModelAttributes includes dirty tracking, which Virtus doesn't support.
- - Simple and fast
+Why not [Virtus][virtus-gem]?  The main reason is that I completely failed to
+get dirty tracking working with Virtus.  This library is also much smaller and
+lighter.
 
 Possible future features, possibly out of scope:
 
@@ -87,7 +86,8 @@ user.write_attribute(:name, 'Fred')
 
 user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-08 15:57:05 +0000}
 
-# Change tracking
+# Change tracking.  A much smaller set of function than that provided by
+# ActiveModel::Dity.
 user.changes # => {:id=>[nil, 5], :paid=>[nil, true], :created_at=>[nil, 2015-01-08 15:57:05 +0000], :name=>[nil, "Fred"]}
 user.name_changed?  # => true
 
