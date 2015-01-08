@@ -163,7 +163,7 @@ RSpec.describe "a class using ModelAttributes" do
       it "raises an error if passed an invalid attribute name" do
         expect do
           user.write_attribute(:spelling_mistake, '3')
-        end.to raise_error(ModelAttributes::InvalidAttributeName,
+        end.to raise_error(ModelAttributes::InvalidAttributeNameError,
                            "Invalid attribute name :spelling_mistake")
       end
     end

@@ -35,7 +35,7 @@ module ModelAttributes
       # Don't want to expose attribute types as a method on the class, so access
       # via a back door.
       type ||= self.class.instance_variable_get('@attribute_types')[name]
-      raise InvalidAttributeName.new(name) unless type
+      raise InvalidAttributeNameError.new(name) unless type
 
       value = cast(value, type)
       return if value == read_attribute(name)
@@ -120,7 +120,7 @@ module ModelAttributes
       when :string
         String(value)
       else
-        raise "Unsupported type #{type.inspect}"
+        raise UnsupportedTypeError.new(type)
       end
     end
   end
