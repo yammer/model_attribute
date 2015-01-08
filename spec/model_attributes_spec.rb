@@ -168,6 +168,24 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#read_attribute" do
+      it "returns the value of an attribute that has been set" do
+        user.write_attribute(:id, 3)
+        expect(user.read_attribute(:id)).to eq(user.id)
+      end
+
+      it "returns nil for an attribute that has not been set" do
+        expect(user.read_attribute(:id)).to be_nil
+      end
+
+      it "raises an error if passed an invalid attribute name" do
+        expect do
+          user.read_attribute(:spelling_mistake)
+        end.to raise_error(ModelAttributes::InvalidAttributeNameError,
+                           "Invalid attribute name :spelling_mistake")
+      end
+    end
+
     describe "#changes" do
       let(:changes) { user.changes }
 

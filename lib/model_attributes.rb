@@ -61,7 +61,11 @@ module ModelAttributes
 
     def read_attribute(name)
       ivar_name = "@#{name}"
-      instance_variable_get(ivar_name) if instance_variable_defined?(ivar_name)
+      if instance_variable_defined?(ivar_name)
+        instance_variable_get(ivar_name)
+      elsif !self.class.attributes.include?(name.to_sym)
+        raise InvalidAttributeNameError.new(name)
+      end
     end
 
     def attributes
