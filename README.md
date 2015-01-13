@@ -8,6 +8,7 @@ Simple attributes for a non-ActiveRecord model.
  - List attribute names and values.
  - Handles integers, booleans, strings and times - a set of types that are very
    easy to persist to and parse from JSON.
+ - Efficient serialization of attributes to a JSON string.
 
 Why not [Virtus][virtus-gem]?  The main reason is that I completely failed to
 get dirty tracking working with Virtus.  This library is also much smaller and
@@ -17,13 +18,13 @@ Possible future features, possibly out of scope:
 
  - Set attributes by passing a hash to `new`.
  - Set attributes by passing a JSON string to `new`.
- - Attributes to a JSON string.
 
 [virtus-gem]:https://github.com/solnic/virtus
 
 ## Usage
 
 ```ruby
+require 'model_attributes'
 class User
   extend ModelAttributes
   attribute :id,         :integer
@@ -85,6 +86,10 @@ user.read_attribute(:created_at)
 user.write_attribute(:name, 'Fred')
 
 user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-08 15:57:05 +0000}
+
+# Efficient JSON serialization
+user.attributes_as_json
+# => "{\"id\":5,\"paid\":true,\"name\":\"Fred\",\"created_at\":1421171317.76286}"
 
 # Change tracking.  A much smaller set of function than that provided by
 # ActiveModel::Dity.

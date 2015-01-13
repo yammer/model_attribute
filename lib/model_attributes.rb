@@ -1,6 +1,7 @@
 require "model_attributes/version"
 require "model_attributes/errors"
 require "time"
+require "oj"
 
 module ModelAttributes
   SUPPORTED_TYPES = [:integer, :boolean, :string, :time]
@@ -97,16 +98,20 @@ module ModelAttributes
       @changes ||= {} #HashWithIndifferentAccess.new
     end
 
+    # Serialize attributes as a JSON string.
+    #
+    #  - Attributes with a nil value are omitted to speed serialization.
+    #  - :time attributes are serialized as a Float giving the number of seconds
+    #    since the epoch, as this is fastest for serialization and deserialization.
     def attributes_as_json
-      hash_to_serialize = self.class.attributes.each_with_object({}) do |name, hash|
-        value = send(name)
+      attributes_hash = self.class.attributes.each_with_object({}) do |name, attributes|
+        value = read_attribute(name)
         unless value.nil?
           value = value.to_f if value.is_a? Time
-          hash[name.to_s] = value
+          attributes[name.to_s] = value
         end
       end
-
-      Oj.dump(hash_to_serialize, mode: :strict)
+      Oj.dump(attributes_hash, :mode => :strict)
     end
 
     def cast(value, type)

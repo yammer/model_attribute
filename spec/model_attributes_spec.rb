@@ -295,6 +295,33 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#attributes_as_json" do
+      let(:time_now) { Time.now }
+
+      before(:each) do
+        user.id = 1
+        user.paid = true
+        user.created_at = time_now
+      end
+
+      it "serializes integer attributes as JSON integer" do
+        expect(user.attributes_as_json).to match(/"id":1/)
+      end
+
+      it "serializes time attributes as JSON float" do
+        expect(user.attributes_as_json).to match(/"created_at":\d+\.\d+/)
+      end
+
+      it "serializes string attributes as JSON string" do
+        user.name = 'Fred'
+        expect(user.attributes_as_json).to match(/"name":"Fred"/)
+      end
+
+      it "omits attributes with a nil value" do
+        expect(user.attributes_as_json).to_not match(/"name"/)
+      end
+    end
+
     describe "equality" do
       let(:u1) { User.new.tap { |u| u.id = 1 } }
 
