@@ -4,6 +4,25 @@ class User
   attribute :paid,       :boolean
   attribute :name,       :string
   attribute :created_at, :time
+
+  def initialize(attributes = {})
+    attributes.each do |key, value|
+      write_attribute(key, value)
+    end
+  end
+end
+
+class UserWithoutId
+  extend ModelAttributes
+  attribute :paid,       :boolean
+  attribute :name,       :string
+  attribute :created_at, :time
+
+  def initialize(attributes = {})
+    attributes.each do |key, value|
+      write_attribute(key, value)
+    end
+  end
 end
 
 RSpec.describe "a class using ModelAttributes" do
@@ -377,11 +396,39 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
-    describe "equality" do
-      let(:u1) { User.new.tap { |u| u.id = 1 } }
+    describe 'equality with :id field' do
+      let(:u1) { User.new(id: 1, name: 'David') }
+
+      context '#==' do
+        it 'returns true when ids match, regardless of other attributes' do
+          u2 = User.new(id: 1, name: 'Dave')
+          expect(u1).to eq(u2)
+        end
+
+        it 'returns false when ids do not match' do
+          u2 = User.new(id: 2, name: 'David')
+          expect(u1).to_not eq(u2)
+        end
+      end
+
+      context '#eql?' do
+        it 'returns true when ids match, regardless of other attributes' do
+          u2 = User.new(id: 1, name: 'Dave')
+          expect(u1).to eql(u2)
+        end
+
+        it 'returns false when ids do not match' do
+          u2 = User.new(id: 2, name: 'David')
+          expect(u1).to_not eql(u2)
+        end
+      end
+    end
+
+    describe 'equality without :id field' do
+      let(:u1) { UserWithoutId.new(name: 'David') }
 
       context "for models with different attribute values" do
-        let(:u2) { User.new.tap { |u| u.id = 2 } }
+        let(:u2) { UserWithoutId.new(name: 'Dave') }
 
         it "#== returns false" do
           expect(u1).to_not eq(u2)
@@ -393,7 +440,7 @@ RSpec.describe "a class using ModelAttributes" do
       end
 
       context "for models with different attributes set" do
-        let(:u2) { User.new }
+        let(:u2) { UserWithoutId.new }
 
         it "#== returns false" do
           expect(u1).to_not eq(u2)
@@ -405,7 +452,7 @@ RSpec.describe "a class using ModelAttributes" do
       end
 
       context "for models with the same attributes set to the same values" do
-        let(:u2) { User.new.tap { |u| u.id = 1 } }
+        let(:u2) { UserWithoutId.new(name: 'David') }
 
         it "#== returns true" do
           expect(u1).to eq(u2)

@@ -96,9 +96,18 @@ module ModelAttributes
     end
 
     def ==(other)
-      self.class == other.class && attributes == other.attributes
+      equal?(other) || (self.class == other.class && compare_attrs(other))
     end
     alias_method :eql?, :==
+
+    def compare_attrs(other)
+      if respond_to?(:id)
+        id == other.id
+      else
+        attributes == other.attributes
+      end
+    end
+    private :compare_attrs
 
     def changes
       @changes ||= {} #HashWithIndifferentAccess.new
