@@ -1,5 +1,6 @@
 require "model_attributes/version"
 require "model_attributes/errors"
+require "time"
 
 module ModelAttributes
   SUPPORTED_TYPES = [:integer, :boolean, :string, :time]
