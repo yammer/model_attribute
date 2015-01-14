@@ -6,9 +6,7 @@ class User
   attribute :created_at, :time
 
   def initialize(attributes = {})
-    attributes.each do |key, value|
-      write_attribute(key, value)
-    end
+    set_attributes(attributes)
   end
 end
 
@@ -19,9 +17,7 @@ class UserWithoutId
   attribute :created_at, :time
 
   def initialize(attributes = {})
-    attributes.each do |key, value|
-      write_attribute(key, value)
-    end
+    set_attributes(attributes)
   end
 end
 
@@ -369,7 +365,7 @@ RSpec.describe "a class using ModelAttributes" do
     end
 
     describe "#inspect" do
-      let(:user) { User.new.tap { |u| u.set_attributes(id: 1, name: "Fred", created_at: "2014-12-25 08:00", paid: true) } }
+      let(:user) { User.new(id: 1, name: "Fred", created_at: "2014-12-25 08:00", paid: true) }
 
       it "includes integer attributes as 'name: value'" do
         expect(user.inspect).to include("id: 1")
