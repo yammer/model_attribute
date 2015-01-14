@@ -11,11 +11,20 @@ Simple attributes for a non-ActiveRecord model.
  - Efficient serialization of attributes to a JSON string.
  - Mass assignment - handy for initializers.
 
-Why not [Virtus][virtus-gem]?  The main reason is that I completely failed to
-get dirty tracking working with Virtus.  This library is also much smaller and
-lighter.
+Why not [Virtus][virtus-gem]?  Virtus doesn't provide attribute tracking, and
+doesn't integrate with [ActiveModel::Dirty][am-dirty].  So if you're not using
+ActiveRecord, but you need attributes with dirty tracking, ModelAttributes may be
+what you're after.  For example, it works very well for a model that fronts an
+HTTP web service, and you want dirty tracking so you can PATCH appropriately.
+
+Also in favor of ModelAttributes:
+
+ - It's simple - less than [200 lines of code][source].
+ - It supports efficient serialization and deserialization to/from JSON.
 
 [virtus-gem]:https://github.com/solnic/virtus
+[am-dirty]:https://github.com/rails/rails/blob/v3.0.20/activemodel/lib/active_model/dirty.rb
+[source]:https://github.int.yammer.com/yammer/model_attributes/blob/master/lib/model_attributes.rb
 
 ## Usage
 
@@ -27,6 +36,10 @@ class User
   attribute :paid,       :boolean
   attribute :name,       :string
   attribute :created_at, :time
+
+  def initialize(attributes)
+    set_attributes(attributes)
+  end
 end
 
 User.attributes # => [:id, :paid, :name, :created_at]
@@ -87,9 +100,10 @@ user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-0
 user.set_attributes(name: "Sally", paid: false)
 user.attributes # => {:id=>5, :paid=>false, :name=>"Sally", :created_at=>2015-01-08 15:57:05 +0000}
 
-# Efficient JSON serialization
-user.attributes_as_json
+# Efficient JSON serialization and deserialization
+json = user.attributes_as_json
 # => "{\"id\":5,\"paid\":true,\"name\":\"Fred\",\"created_at\":1421171317.76286}"
+user2 = User.new(Oj.load(json, strict: true))
 
 # Change tracking.  A much smaller set of function than that provided by
 # ActiveModel::Dity.
