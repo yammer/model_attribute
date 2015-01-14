@@ -94,7 +94,9 @@ user.created_at # => 2015-01-08 16:23:02 +0000
 user.read_attribute(:created_at)
 user.write_attribute(:name, 'Fred')
 
+# View attributes
 user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-08 15:57:05 +0000}
+user.inspect # => "#<User id: 5, paid: true, name: \"Fred\", created_at: 2015-01-08 15:57:05 +0000>"
 
 # Mass assignment
 user.set_attributes(name: "Sally", paid: false)

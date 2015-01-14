@@ -120,6 +120,15 @@ module ModelAttributes
       Oj.dump(attributes_hash, :mode => :strict)
     end
 
+    # Includes the class name and all the attributes and their values.  e.g.
+    # "#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000>"
+    def inspect
+      attribute_string = self.class.attributes.map do |key|
+        "#{key}: #{read_attribute(key).inspect}"
+      end.join(', ')
+      "#<#{self.class} #{attribute_string}>"
+    end
+
     def cast(value, type)
       return nil if value.nil?
 

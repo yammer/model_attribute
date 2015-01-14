@@ -349,6 +349,34 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#inspect" do
+      let(:user) { User.new.tap { |u| u.set_attributes(id: 1, name: "Fred", created_at: "2014-12-25 08:00", paid: true) } }
+
+      it "includes integer attributes as 'name: value'" do
+        expect(user.inspect).to include("id: 1")
+      end
+
+      it "includes boolean attributes as 'name: true/false'" do
+        expect(user.inspect).to include("paid: true")
+      end
+
+      it "includes string attributes as 'name: \"string\"'" do
+        expect(user.inspect).to include('name: "Fred"')
+      end
+
+      it "includes time attributes as 'name: <ISO 8601>'" do
+        expect(user.inspect).to include("created_at: 2014-12-25 08:00:00 +0000")
+      end
+
+      it "includes the class name" do
+        expect(user.inspect).to include("User")
+      end
+
+      it "looks like '#<User id: 1, paid: true, name: ..., created_at: ...>'" do
+        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000>")
+      end
+    end
+
     describe "equality" do
       let(:u1) { User.new.tap { |u| u.id = 1 } }
 
