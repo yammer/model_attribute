@@ -322,6 +322,33 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#set_attributes" do
+      it "allows mass assignment of attributes" do
+        user.set_attributes(id: 5, name: "Sally")
+        expect(user.attributes).to include(id: 5, name: "Sally")
+      end
+
+      it "ignores keys that have no writer method" do
+        user.set_attributes(id: 5, species: "Human")
+        expect(user.attributes).to_not include(species: "Human")
+      end
+
+      context "for an attribute with a private writer method" do
+        before(:all) { User.send(:private, :name=) }
+        after(:all)  { User.send(:public,  :name=) }
+
+        it "does not set the attribute" do
+          user.set_attributes(id: 5, name: "Sally")
+          expect(user.attributes).to_not include(name: "Sally")
+        end
+
+        it "sets the attribute if the flag is passed" do
+          user.set_attributes({id: 5, name: "Sally"}, true)
+          expect(user.attributes).to include(name: "Sally")
+        end
+      end
+    end
+
     describe "equality" do
       let(:u1) { User.new.tap { |u| u.id = 1 } }
 

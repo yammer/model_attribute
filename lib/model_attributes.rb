@@ -89,6 +89,12 @@ module ModelAttributes
       end
     end
 
+    def set_attributes(attributes, can_set_private_attrs = false)
+      attributes.each do |key, value|
+        send("#{key}=", value) if respond_to?("#{key}=", can_set_private_attrs)
+      end
+    end
+
     def ==(other)
       self.class == other.class && attributes == other.attributes
     end

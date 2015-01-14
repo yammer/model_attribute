@@ -9,15 +9,11 @@ Simple attributes for a non-ActiveRecord model.
  - Handles integers, booleans, strings and times - a set of types that are very
    easy to persist to and parse from JSON.
  - Efficient serialization of attributes to a JSON string.
+ - Mass assignment - handy for initializers.
 
 Why not [Virtus][virtus-gem]?  The main reason is that I completely failed to
 get dirty tracking working with Virtus.  This library is also much smaller and
 lighter.
-
-Possible future features, possibly out of scope:
-
- - Set attributes by passing a hash to `new`.
- - Set attributes by passing a JSON string to `new`.
 
 [virtus-gem]:https://github.com/solnic/virtus
 
@@ -86,6 +82,10 @@ user.read_attribute(:created_at)
 user.write_attribute(:name, 'Fred')
 
 user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-08 15:57:05 +0000}
+
+# Mass assignment
+user.set_attributes(name: "Sally", paid: false)
+user.attributes # => {:id=>5, :paid=>false, :name=>"Sally", :created_at=>2015-01-08 15:57:05 +0000}
 
 # Efficient JSON serialization
 user.attributes_as_json
