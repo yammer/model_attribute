@@ -295,6 +295,88 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#attributes_as_json" do
+      let(:time_now) { Time.now }
+
+      before(:each) do
+        user.id = 1
+        user.paid = true
+        user.created_at = time_now
+      end
+
+      it "serializes integer attributes as JSON integer" do
+        expect(user.attributes_as_json).to match(/"id":1/)
+      end
+
+      it "serializes time attributes as JSON float" do
+        expect(user.attributes_as_json).to match(/"created_at":\d+\.\d+/)
+      end
+
+      it "serializes string attributes as JSON string" do
+        user.name = 'Fred'
+        expect(user.attributes_as_json).to match(/"name":"Fred"/)
+      end
+
+      it "omits attributes with a nil value" do
+        expect(user.attributes_as_json).to_not match(/"name"/)
+      end
+    end
+
+    describe "#set_attributes" do
+      it "allows mass assignment of attributes" do
+        user.set_attributes(id: 5, name: "Sally")
+        expect(user.attributes).to include(id: 5, name: "Sally")
+      end
+
+      it "ignores keys that have no writer method" do
+        user.set_attributes(id: 5, species: "Human")
+        expect(user.attributes).to_not include(species: "Human")
+      end
+
+      context "for an attribute with a private writer method" do
+        before(:all) { User.send(:private, :name=) }
+        after(:all)  { User.send(:public,  :name=) }
+
+        it "does not set the attribute" do
+          user.set_attributes(id: 5, name: "Sally")
+          expect(user.attributes).to_not include(name: "Sally")
+        end
+
+        it "sets the attribute if the flag is passed" do
+          user.set_attributes({id: 5, name: "Sally"}, true)
+          expect(user.attributes).to include(name: "Sally")
+        end
+      end
+    end
+
+    describe "#inspect" do
+      let(:user) { User.new.tap { |u| u.set_attributes(id: 1, name: "Fred", created_at: "2014-12-25 08:00", paid: true) } }
+
+      it "includes integer attributes as 'name: value'" do
+        expect(user.inspect).to include("id: 1")
+      end
+
+      it "includes boolean attributes as 'name: true/false'" do
+        expect(user.inspect).to include("paid: true")
+      end
+
+      it "includes string attributes as 'name: \"string\"'" do
+        expect(user.inspect).to include('name: "Fred"')
+      end
+
+      it "includes time attributes as 'name: <ISO 8601>'" do
+        expect(user.inspect).to include("created_at: 2014-12-25 08:00:00 +0000")
+      end
+
+      it "includes the class name" do
+        expect(user.inspect).to include("User")
+      end
+
+      it "looks like '#<User id: 1, paid: true, name: ..., created_at: ...>'" do
+        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000>")
+      end
+    end
+
     describe "equality" do
       let(:u1) { User.new.tap { |u| u.id = 1 } }
 
