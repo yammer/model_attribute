@@ -122,6 +122,24 @@ another.name = 'Fred'
 user == another   # => true
 user === another  # => true
 user.eql? another # => true
+
+# Making some attributes private
+
+class User
+  extend ModelAttributes
+  attribute :events, :string
+  private :events=
+
+  def initialize(attributes)
+    # Pass flag to set_attributes to allow setting attributes with private writers
+    set_attributes(attributes, true)
+  end
+
+  def add_event(new_event)
+    events ||= ""
+    events += new_event
+  end
+end
 ```
 
 ## Installation
