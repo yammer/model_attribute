@@ -96,7 +96,12 @@ module ModelAttributes
     end
 
     def ==(other)
-      self.class == other.class && attributes == other.attributes
+      return true if equal?(other)
+      if respond_to?(:id)
+        other.kind_of?(self.class) && id == other.id
+      else
+        other.kind_of?(self.class) && attributes == other.attributes
+      end
     end
     alias_method :eql?, :==
 
