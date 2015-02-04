@@ -111,6 +111,10 @@ user2 = User.new(Oj.load(json, strict: true))
 # ActiveModel::Dity.
 user.changes # => {:id=>[nil, 5], :paid=>[nil, true], :created_at=>[nil, 2015-01-08 15:57:05 +0000], :name=>[nil, "Fred"]}
 user.name_changed?  # => true
+# If you're imitating ActiveRecord behaviour, changes are cleared after
+# after_save callbacks, but before after_commit callbacks.
+user.changes.clear
+user.changes # => {}
 
 # Equality of all the attribute values match
 another = User.new
