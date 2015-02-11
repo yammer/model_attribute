@@ -8,7 +8,7 @@ Simple attributes for a non-ActiveRecord model.
  - List attribute names and values.
  - Handles integers, booleans, strings and times - a set of types that are very
    easy to persist to and parse from JSON.
- - Efficient serialization of attributes to a JSON string.
+ - Supports efficient serialization of attributes to JSON.
  - Mass assignment - handy for initializers.
 
 Why not [Virtus][virtus-gem]?  Virtus doesn't provide attribute tracking, and
@@ -102,8 +102,12 @@ user.inspect # => "#<User id: 5, paid: true, name: \"Fred\", created_at: 2015-01
 user.set_attributes(name: "Sally", paid: false)
 user.attributes # => {:id=>5, :paid=>false, :name=>"Sally", :created_at=>2015-01-08 15:57:05 +0000}
 
-# Efficient JSON serialization and deserialization
-json = user.attributes_as_json
+# Efficient JSON serialization and deserialization.
+# Attributes with nil values are omitted.
+user.attributes_for_json
+# => {"id"=>5, "paid"=>true, "name"=>"Fred", "created_at"=>1421171317.76286}
+require 'oj'
+Oj.dump(user.attributes_for_json, mode: :strict)
 # => "{\"id\":5,\"paid\":true,\"name\":\"Fred\",\"created_at\":1421171317.76286}"
 user2 = User.new(Oj.load(json, strict: true))
 

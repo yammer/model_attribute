@@ -310,7 +310,7 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
-    describe "#attributes_as_json" do
+    describe "#attributes_for_json" do
       let(:time_now) { Time.now }
 
       before(:each) do
@@ -320,20 +320,20 @@ RSpec.describe "a class using ModelAttributes" do
       end
 
       it "serializes integer attributes as JSON integer" do
-        expect(user.attributes_as_json).to match(/"id":1/)
+        expect(user.attributes_for_json).to include("id" => 1)
       end
 
       it "serializes time attributes as JSON float" do
-        expect(user.attributes_as_json).to match(/"created_at":\d+\.\d+/)
+        expect(user.attributes_for_json).to include("created_at" => instance_of(Float))
       end
 
       it "serializes string attributes as JSON string" do
         user.name = 'Fred'
-        expect(user.attributes_as_json).to match(/"name":"Fred"/)
+        expect(user.attributes_for_json).to include("name" => "Fred")
       end
 
       it "omits attributes with a nil value" do
-        expect(user.attributes_as_json).to_not match(/"name"/)
+        expect(user.attributes_for_json).to_not include("name")
       end
     end
 
