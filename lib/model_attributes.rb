@@ -112,13 +112,13 @@ module ModelAttributes
     #
     #  - Attribute keys are strings (for 'strict' JSON dumping).
     #  - Attributes with a nil value are omitted to speed serialization.
-    #  - :time attributes are serialized as a Float giving the number of seconds
-    #    since the epoch, as this is fastest for serialization and deserialization.
+    #  - :time attributes are serialized as an Integer giving the number of
+    #    milliseconds since the epoch.
     def attributes_for_json
       self.class.attributes.each_with_object({}) do |name, attributes|
         value = read_attribute(name)
         unless value.nil?
-          value = value.to_f if value.is_a? Time
+          value = (value.to_f * 1000).to_i if value.is_a? Time
           attributes[name.to_s] = value
         end
       end
@@ -158,8 +158,12 @@ module ModelAttributes
           value
         when Date, DateTime
           value.to_time
+        when Integer
+          # Assume milliseconds since epoch.
+          Time.at(value / 1000.0)
         when Numeric
-          Time.at(Float(value))
+          # Numeric, but not an integer. Assume seconds since epoch.
+          Time.at(value)
         else
           Time.parse(value)
         end

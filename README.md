@@ -85,9 +85,11 @@ user.created_at = Date.parse('2014-01-08')
 user.created_at # => 2014-01-08 00:00:00 +0000
 user.created_at = DateTime.parse("2014-12-25 13:00:45")
 user.created_at # => 2014-12-25 13:00:45 +0000
-# Convert from seconds since the epoch - a very efficient way of serializing and
-# deserializing.
+# Convert from seconds since the epoch
 user.created_at = Time.now.to_f
+user.created_at # => 2015-01-08 16:23:02 +0000
+# Or milliseconds since the epoch
+user.created_at = 1420734182000
 user.created_at # => 2015-01-08 16:23:02 +0000
 
 # read_attribute and write_attribute methods
@@ -105,10 +107,10 @@ user.attributes # => {:id=>5, :paid=>false, :name=>"Sally", :created_at=>2015-01
 # Efficient JSON serialization and deserialization.
 # Attributes with nil values are omitted.
 user.attributes_for_json
-# => {"id"=>5, "paid"=>true, "name"=>"Fred", "created_at"=>1421171317.76286}
+# => {"id"=>5, "paid"=>true, "name"=>"Fred", "created_at"=>1421171317762}
 require 'oj'
 Oj.dump(user.attributes_for_json, mode: :strict)
-# => "{\"id\":5,\"paid\":true,\"name\":\"Fred\",\"created_at\":1421171317.76286}"
+# => "{\"id\":5,\"paid\":true,\"name\":\"Fred\",\"created_at\":1421171317762}"
 user2 = User.new(Oj.load(json, strict: true))
 
 # Change tracking.  A much smaller set of function than that provided by
