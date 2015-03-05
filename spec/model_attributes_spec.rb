@@ -179,6 +179,13 @@ RSpec.describe "a class using ModelAttributes" do
         expect(user.created_at).to be_a_kind_of(Time)
       end
 
+      it "parses integers as milliseconds past the epoch" do
+        user.created_at = (now_time.to_f * 1000).to_i
+        # Truncating to milliseconds loses precision, so use be_within
+        expect(user.created_at).to be_within(0.001).of(now_time)
+        expect(user.created_at).to be_a_kind_of(Time)
+      end
+
       it "parses strings to date/times" do
         user.created_at = "2014-12-25 14:00:00 +0100"
         expect(user.created_at).to eq(Time.new(2014, 12, 25, 13, 00, 00))
@@ -323,8 +330,8 @@ RSpec.describe "a class using ModelAttributes" do
         expect(user.attributes_for_json).to include("id" => 1)
       end
 
-      it "serializes time attributes as JSON float" do
-        expect(user.attributes_for_json).to include("created_at" => instance_of(Float))
+      it "serializes time attributes as JSON integer" do
+        expect(user.attributes_for_json).to include("created_at" => instance_of(Fixnum))
       end
 
       it "serializes string attributes as JSON string" do
