@@ -283,6 +283,53 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#changes_for_json" do
+      let(:changes_for_json) { user.changes_for_json }
+
+      context "for a model instance created with no attributes" do
+        it "is empty" do
+          expect(changes_for_json).to be_empty
+        end
+      end
+
+      context "when an attribute is set via a writer method" do
+        before(:each) { user.id = 3 }
+
+        it "has an entry from attribute name (as a string) to the new value" do
+          expect(changes_for_json).to include('id' => 3)
+        end
+
+        context "when an attribute is set again" do
+          before(:each) { user.id = 5 }
+
+          it "shows the latest value for the attribute" do
+            expect(changes_for_json).to include('id' => 5)
+          end
+        end
+
+        context "when an attribute is set back to its original value" do
+          before(:each) { user.id = nil }
+
+          it "does not have an entry for the attribute" do
+            expect(changes_for_json).to_not include('id')
+          end
+        end
+
+        context "if the returned hash is modified" do
+          before(:each) { user.changes_for_json.clear }
+
+          it "does not affect subsequent results from changes_for_json" do
+            expect(changes_for_json).to include('id' => 3)
+          end
+        end
+      end
+
+      it "serializes time attributes as JSON integer" do
+        user.created_at = Time.now
+        expect(changes_for_json).to include("created_at" => instance_of(Fixnum))
+      end
+    end
+
     describe "id_changed?" do
       context "with no changes" do
         it "returns false" do

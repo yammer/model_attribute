@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## HEAD
+
+- **New method**: #changes_for_json  Returns a hash from attribute name to its
+  new value, suitable for serialization to a JSON string.  Easily generate the
+  payload to send in an HTTP PUT to a web service.
+
 ## 1.3.0
 
 - **Breaking change**: Parsing an integer to a time attribute, the integer is
