@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
   new value, suitable for serialization to a JSON string.  Easily generate the
   payload to send in an HTTP PUT to a web service.
 
-- ***New attribute type: json***
+- **New attribute type: json**  Store an array/hash/etc. built using the basic
+  JSON data types: nil, numeric, string, boolean, hash and array.
 
 ## 1.3.0
 
