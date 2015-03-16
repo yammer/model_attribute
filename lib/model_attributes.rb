@@ -3,7 +3,7 @@ require "model_attributes/errors"
 require "time"
 
 module ModelAttributes
-  SUPPORTED_TYPES = [:integer, :boolean, :string, :time]
+  SUPPORTED_TYPES = [:integer, :boolean, :string, :time, :json]
 
   def self.extended(base)
     base.send(:include, InstanceMethods)
@@ -187,6 +187,18 @@ module ModelAttributes
         end
       when :string
         String(value)
+      when :json
+        if value.nil?          ||
+          value == true        ||
+          value == false       ||
+          value.is_a?(Numeric) ||
+          value.is_a?(String)  ||
+          value.is_a?(Array)   ||
+          value.is_a?(Hash)
+          value
+        else
+          raise "JSON only supports nil, numeric, string, boolean and arrays and hashes of those."
+        end
       else
         raise UnsupportedTypeError.new(type)
       end
