@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## HEAD
+## 1.4.0
 
 - **New method**: #changes_for_json  Returns a hash from attribute name to its
   new value, suitable for serialization to a JSON string.  Easily generate the
