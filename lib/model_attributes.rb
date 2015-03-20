@@ -1,4 +1,5 @@
 require "model_attributes/version"
+require "model_attributes/json"
 require "model_attributes/errors"
 require "time"
 
@@ -188,13 +189,7 @@ module ModelAttributes
       when :string
         String(value)
       when :json
-        if value.nil?          ||
-          value == true        ||
-          value == false       ||
-          value.is_a?(Numeric) ||
-          value.is_a?(String)  ||
-          value.is_a?(Array)   ||
-          value.is_a?(Hash)
+        if Json.valid?(value)
           value
         else
           raise "JSON only supports nil, numeric, string, boolean and arrays and hashes of those."

@@ -253,8 +253,34 @@ RSpec.describe "a class using ModelAttributes" do
         expect(user.profile).to eq({'skill' => 8})
       end
 
+      it "stores nested hashes and arrays" do
+        json = {'array' => [1,
+                            2,
+                            true,
+                            {'inner' => true},
+                            ['inside', {}]
+                           ],
+                'hash'  => {'getting' => {'nested' => 'yes'}},
+                'boolean' => true
+               }
+        user.profile = json
+        expect(user.profile).to eq(json)
+      end
+
       it "raises when passed an object not supported by JSON" do
         expect { user.profile = Object.new }.to raise_error
+      end
+
+      it "raises when passed a hash with a non-string key" do
+        expect { user.profile = {1 => 'first'} }.to raise_error
+      end
+
+      it "raises when passed a hash with an unsupported value" do
+        expect { user.profile = {'first' => :symbol} }.to raise_error
+      end
+
+      it "raises when passed an array with an unsupported value" do
+        expect { user.profile = [1, 2, nil, :symbol] }.to raise_error
       end
 
       it "stores nil" do
