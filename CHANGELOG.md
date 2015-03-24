@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.4.0
+
+- **New method**: #changes_for_json  Returns a hash from attribute name to its
+  new value, suitable for serialization to a JSON string.  Easily generate the
+  payload to send in an HTTP PUT to a web service.
+
+- **New attribute type: json**  Store an array/hash/etc. built using the basic
+  JSON data types: nil, numeric, string, boolean, hash and array.
+
 ## 1.3.0
 
 - **Breaking change**: Parsing an integer to a time attribute, the integer is

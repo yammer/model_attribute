@@ -36,16 +36,17 @@ class User
   attribute :paid,       :boolean
   attribute :name,       :string
   attribute :created_at, :time
+  attribute :grades,     :json
 
-  def initialize(attributes)
+  def initialize(attributes = {})
     set_attributes(attributes)
   end
 end
 
-User.attributes # => [:id, :paid, :name, :created_at]
+User.attributes # => [:id, :paid, :name, :created_at, :grades]
 user = User.new
 
-user.attributes # => {:id=>nil, :paid=>nil, :name=>nil, :created_at=>nil}
+user.attributes # => {:id=>nil, :paid=>nil, :name=>nil, :created_at=>nil, :grades=>nil}
 
 # An integer attribute
 user.id # => nil
@@ -92,13 +93,24 @@ user.created_at # => 2015-01-08 16:23:02 +0000
 user.created_at = 1420734182000
 user.created_at # => 2015-01-08 16:23:02 +0000
 
+# A :json attribute is schemaless and accepts the basic JSON types - hash,
+# array, nil, numeric, string and boolean.
+user.grades = {'maths' => 'A', 'history' => 'C'}
+user.grades # => {"maths"=>"A", "history"=>"C"}
+user.grades = ['A', 'A*', 'C']
+user.grades # => ["A", "A*", "C"]
+user.grades = 'AAB'
+user.grades # => "AAB"
+user.grades = Time.now
+# => RuntimeError: JSON only supports nil, numeric, string, boolean and arrays and hashes of those.
+
 # read_attribute and write_attribute methods
 user.read_attribute(:created_at)
 user.write_attribute(:name, 'Fred')
 
 # View attributes
-user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-08 15:57:05 +0000}
-user.inspect # => "#<User id: 5, paid: true, name: \"Fred\", created_at: 2015-01-08 15:57:05 +0000>"
+user.attributes # => {:id=>5, :paid=>true, :name=>"Fred", :created_at=>2015-01-08 15:57:05 +0000, :grades=>{"maths"=>"A", "history"=>"C"}}
+user.inspect # => "#<User id: 5, paid: true, name: \"Fred\", created_at: 2015-01-08 15:57:05 +0000, grades: {\"maths\"=>\"A\", \"history\"=>\"C\"}>"
 
 # Mass assignment
 user.set_attributes(name: "Sally", paid: false)
@@ -117,6 +129,8 @@ user2 = User.new(Oj.load(json, strict: true))
 # ActiveModel::Dity.
 user.changes # => {:id=>[nil, 5], :paid=>[nil, true], :created_at=>[nil, 2015-01-08 15:57:05 +0000], :name=>[nil, "Fred"]}
 user.name_changed?  # => true
+# If you need the new values to send as a PUT to a web service
+user.changes_for_json # => {"id"=>5, "paid"=>true, "name"=>"Fred", "created_at"=>1421171317762}
 # If you're imitating ActiveRecord behaviour, changes are cleared after
 # after_save callbacks, but before after_commit callbacks.
 user.changes.clear

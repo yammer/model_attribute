@@ -1,9 +1,10 @@
 require "model_attributes/version"
+require "model_attributes/json"
 require "model_attributes/errors"
 require "time"
 
 module ModelAttributes
-  SUPPORTED_TYPES = [:integer, :boolean, :string, :time]
+  SUPPORTED_TYPES = [:integer, :boolean, :string, :time, :json]
 
   def self.extended(base)
     base.send(:include, InstanceMethods)
@@ -108,7 +109,7 @@ module ModelAttributes
       @changes ||= {} #HashWithIndifferentAccess.new
     end
 
-    # Attributes suitable for serialize to a JSON string.
+    # Attributes suitable for serializing to a JSON string.
     #
     #  - Attribute keys are strings (for 'strict' JSON dumping).
     #  - Attributes with a nil value are omitted to speed serialization.
@@ -122,6 +123,24 @@ module ModelAttributes
           attributes[name.to_s] = value
         end
       end
+    end
+
+    # Changed attributes suitable for serializing to a JSON string.  Returns a
+    # hash from attribute name (as a string) to the new value of that attribute,
+    # for attributes that have changed.
+    #
+    #  - :time attributes are serialized as an Integer giving the number of
+    #    milliseconds since the epoch.
+    #  - Unlike attributes_for_json, attributes that have changed to a nil value
+    #    *are* included.
+    def changes_for_json
+      hash = {}
+      changes.each do |attr_name, (_old_value, new_value)|
+        new_value = (new_value.to_f * 1000).to_i if new_value.is_a? Time
+        hash[attr_name.to_s] = new_value
+      end
+
+      hash
     end
 
     # Includes the class name and all the attributes and their values.  e.g.
@@ -169,6 +188,12 @@ module ModelAttributes
         end
       when :string
         String(value)
+      when :json
+        if Json.valid?(value)
+          value
+        else
+          raise "JSON only supports nil, numeric, string, boolean and arrays and hashes of those."
+        end
       else
         raise UnsupportedTypeError.new(type)
       end

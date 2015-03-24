@@ -4,6 +4,7 @@ class User
   attribute :paid,       :boolean
   attribute :name,       :string
   attribute :created_at, :time
+  attribute :profile,    :json
 
   def initialize(attributes = {})
     set_attributes(attributes)
@@ -24,7 +25,7 @@ end
 RSpec.describe "a class using ModelAttributes" do
   describe ".attributes" do
     it "returns an array of attribute names as symbols" do
-      expect(User.attributes).to eq([:id, :paid, :name, :created_at])
+      expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile])
     end
   end
 
@@ -34,7 +35,7 @@ RSpec.describe "a class using ModelAttributes" do
         User.attribute :address, :custom_type
       end.to raise_error(ModelAttributes::UnsupportedTypeError,
                          "Unsupported type :custom_type. " +
-                         "Must be one of :integer, :boolean, :string, :time.")
+                         "Must be one of :integer, :boolean, :string, :time, :json.")
     end
   end
 
@@ -217,6 +218,83 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "a json attribute (profile)" do
+      it "is nil when unset" do
+        expect(user.profile).to be_nil
+      end
+
+      it "stores a string" do
+        user.profile = 'Incomplete'
+        expect(user.profile).to eq('Incomplete')
+      end
+
+      it "stores an integer" do
+        user.profile = 3
+        expect(user.profile).to eq(3)
+      end
+
+      it "stores true" do
+        user.profile = true
+        expect(user.profile).to eq(true)
+      end
+
+      it "stores false" do
+        user.profile = false
+        expect(user.profile).to eq(false)
+      end
+
+      it "stores an array" do
+        user.profile = [1, 2, 3]
+        expect(user.profile).to eq([1, 2, 3])
+      end
+
+      it "stores a hash" do
+        user.profile = {'skill' => 8}
+        expect(user.profile).to eq({'skill' => 8})
+      end
+
+      it "stores nested hashes and arrays" do
+        json = {'array' => [1,
+                            2,
+                            true,
+                            {'inner' => true},
+                            ['inside', {}]
+                           ],
+                'hash'  => {'getting' => {'nested' => 'yes'}},
+                'boolean' => true
+               }
+        user.profile = json
+        expect(user.profile).to eq(json)
+      end
+
+      it "raises when passed an object not supported by JSON" do
+        expect { user.profile = Object.new }.to raise_error
+      end
+
+      it "raises when passed a hash with a non-string key" do
+        expect { user.profile = {1 => 'first'} }.to raise_error
+      end
+
+      it "raises when passed a hash with an unsupported value" do
+        expect { user.profile = {'first' => :symbol} }.to raise_error
+      end
+
+      it "raises when passed an array with an unsupported value" do
+        expect { user.profile = [1, 2, nil, :symbol] }.to raise_error
+      end
+
+      it "stores nil" do
+        user.profile = {'foo' => 'bar'}
+        user.profile = nil
+        expect(user.profile).to be_nil
+      end
+
+      it "does not provide a profile? method" do
+        expect(user).to_not respond_to(:profile?)
+        expect { user.profile? }.to raise_error(NoMethodError)
+      end
+    end
+
     describe "#write_attribute" do
       it "does the same casting as using the writer method" do
         user.write_attribute(:id, '3')
@@ -283,6 +361,53 @@ RSpec.describe "a class using ModelAttributes" do
       end
     end
 
+    describe "#changes_for_json" do
+      let(:changes_for_json) { user.changes_for_json }
+
+      context "for a model instance created with no attributes" do
+        it "is empty" do
+          expect(changes_for_json).to be_empty
+        end
+      end
+
+      context "when an attribute is set via a writer method" do
+        before(:each) { user.id = 3 }
+
+        it "has an entry from attribute name (as a string) to the new value" do
+          expect(changes_for_json).to include('id' => 3)
+        end
+
+        context "when an attribute is set again" do
+          before(:each) { user.id = 5 }
+
+          it "shows the latest value for the attribute" do
+            expect(changes_for_json).to include('id' => 5)
+          end
+        end
+
+        context "when an attribute is set back to its original value" do
+          before(:each) { user.id = nil }
+
+          it "does not have an entry for the attribute" do
+            expect(changes_for_json).to_not include('id')
+          end
+        end
+
+        context "if the returned hash is modified" do
+          before(:each) { user.changes_for_json.clear }
+
+          it "does not affect subsequent results from changes_for_json" do
+            expect(changes_for_json).to include('id' => 3)
+          end
+        end
+      end
+
+      it "serializes time attributes as JSON integer" do
+        user.created_at = Time.now
+        expect(changes_for_json).to include("created_at" => instance_of(Fixnum))
+      end
+    end
+
     describe "id_changed?" do
       context "with no changes" do
         it "returns false" do
@@ -339,6 +464,12 @@ RSpec.describe "a class using ModelAttributes" do
         expect(user.attributes_for_json).to include("name" => "Fred")
       end
 
+      it "leaves JSON attributes unchanged" do
+        json = {'interests' => ['coding', 'social networks'], 'rank' => 15}
+        user.profile = json
+        expect(user.attributes_for_json).to include("profile" => json)
+      end
+
       it "omits attributes with a nil value" do
         expect(user.attributes_for_json).to_not include("name")
       end
@@ -372,7 +503,13 @@ RSpec.describe "a class using ModelAttributes" do
     end
 
     describe "#inspect" do
-      let(:user) { User.new(id: 1, name: "Fred", created_at: "2014-12-25 08:00", paid: true) }
+      let(:user) do
+        User.new(id: 1,
+                 name: "Fred",
+                 created_at: "2014-12-25 08:00",
+                 paid: true,
+                 profile: {'interests' => ['coding', 'social networks'], 'rank' => 15})
+      end
 
       it "includes integer attributes as 'name: value'" do
         expect(user.inspect).to include("id: 1")
@@ -390,12 +527,16 @@ RSpec.describe "a class using ModelAttributes" do
         expect(user.inspect).to include("created_at: 2014-12-25 08:00:00 +0000")
       end
 
+      it "includes json attributes as 'name: inspected_json'" do
+        expect(user.inspect).to include('profile: {"interests"=>["coding", "social networks"], "rank"=>15}')
+      end
+
       it "includes the class name" do
         expect(user.inspect).to include("User")
       end
 
       it "looks like '#<User id: 1, paid: true, name: ..., created_at: ...>'" do
-        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000>")
+        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}>")
       end
     end
 
