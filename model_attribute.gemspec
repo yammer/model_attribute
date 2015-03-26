@@ -9,6 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ["David Waller"]
   spec.email         = ["dwaller@yammer-inc.com"]
   spec.summary       = %q{Attributes for non-ActiveRecord models}
+  spec.description   = <<-EOF
+    Attributes for non-ActiveRecord models.
+    Smaller and simpler than Virtus, and adds dirty tracking.
+  EOF
   spec.homepage      = ""
   spec.license       = "MIT"
 
