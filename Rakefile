@@ -1,2 +1,1 @@
-require "bundler/yammer_gem_tasks"
-
+require "bundler/gem_tasks"
