@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'model_attributes/version'
+require 'model_attribute/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "model_attributes"
-  spec.version       = ModelAttributes::VERSION
+  spec.name          = "model_attribute"
+  spec.version       = ModelAttribute::VERSION
   spec.authors       = ["David Waller"]
   spec.email         = ["dwaller@yammer-inc.com"]
   spec.summary       = %q{Attributes for non-ActiveRecord models}

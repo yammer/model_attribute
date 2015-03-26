@@ -1,5 +1,5 @@
 class User
-  extend ModelAttributes
+  extend ModelAttribute
   attribute :id,         :integer
   attribute :paid,       :boolean
   attribute :name,       :string
@@ -12,7 +12,7 @@ class User
 end
 
 class UserWithoutId
-  extend ModelAttributes
+  extend ModelAttribute
   attribute :paid,       :boolean
   attribute :name,       :string
   attribute :created_at, :time
@@ -22,7 +22,7 @@ class UserWithoutId
   end
 end
 
-RSpec.describe "a class using ModelAttributes" do
+RSpec.describe "a class using ModelAttribute" do
   describe ".attributes" do
     it "returns an array of attribute names as symbols" do
       expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile])
@@ -33,7 +33,7 @@ RSpec.describe "a class using ModelAttributes" do
     it "raises an error" do
       expect do
         User.attribute :address, :custom_type
-      end.to raise_error(ModelAttributes::UnsupportedTypeError,
+      end.to raise_error(ModelAttribute::UnsupportedTypeError,
                          "Unsupported type :custom_type. " +
                          "Must be one of :integer, :boolean, :string, :time, :json.")
     end
@@ -304,7 +304,7 @@ RSpec.describe "a class using ModelAttributes" do
       it "raises an error if passed an invalid attribute name" do
         expect do
           user.write_attribute(:spelling_mistake, '3')
-        end.to raise_error(ModelAttributes::InvalidAttributeNameError,
+        end.to raise_error(ModelAttribute::InvalidAttributeNameError,
                            "Invalid attribute name :spelling_mistake")
       end
     end
@@ -322,7 +322,7 @@ RSpec.describe "a class using ModelAttributes" do
       it "raises an error if passed an invalid attribute name" do
         expect do
           user.read_attribute(:spelling_mistake)
-        end.to raise_error(ModelAttributes::InvalidAttributeNameError,
+        end.to raise_error(ModelAttribute::InvalidAttributeNameError,
                            "Invalid attribute name :spelling_mistake")
       end
     end

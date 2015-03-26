@@ -1,9 +1,9 @@
-require "model_attributes/version"
-require "model_attributes/json"
-require "model_attributes/errors"
+require "model_attribute/version"
+require "model_attribute/json"
+require "model_attribute/errors"
 require "time"
 
-module ModelAttributes
+module ModelAttribute
   SUPPORTED_TYPES = [:integer, :boolean, :string, :time, :json]
 
   def self.extended(base)
