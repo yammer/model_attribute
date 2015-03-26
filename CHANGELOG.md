@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0
+
+- **Breaking change**: Rename to `ModelAttribute` (no trailing 's') to avoid name
+  clash with another gem.
+
 ## 1.4.0
 
 - **New method**: #changes_for_json  Returns a hash from attribute name to its

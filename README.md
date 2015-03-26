@@ -1,4 +1,4 @@
-# ModelAttributes
+# ModelAttribute
 
 Simple attributes for a non-ActiveRecord model.
 
@@ -13,25 +13,25 @@ Simple attributes for a non-ActiveRecord model.
 
 Why not [Virtus][virtus-gem]?  Virtus doesn't provide attribute tracking, and
 doesn't integrate with [ActiveModel::Dirty][am-dirty].  So if you're not using
-ActiveRecord, but you need attributes with dirty tracking, ModelAttributes may be
+ActiveRecord, but you need attributes with dirty tracking, ModelAttribute may be
 what you're after.  For example, it works very well for a model that fronts an
 HTTP web service, and you want dirty tracking so you can PATCH appropriately.
 
-Also in favor of ModelAttributes:
+Also in favor of ModelAttribute:
 
  - It's simple - less than [200 lines of code][source].
  - It supports efficient serialization and deserialization to/from JSON.
 
 [virtus-gem]:https://github.com/solnic/virtus
 [am-dirty]:https://github.com/rails/rails/blob/v3.0.20/activemodel/lib/active_model/dirty.rb
-[source]:https://github.int.yammer.com/yammer/model_attributes/blob/master/lib/model_attributes.rb
+[source]:https://github.int.yammer.com/yammer/model_attribute/blob/master/lib/model_attributes.rb
 
 ## Usage
 
 ```ruby
-require 'model_attributes'
+require 'model_attribute'
 class User
-  extend ModelAttributes
+  extend ModelAttribute
   attribute :id,         :integer
   attribute :paid,       :boolean
   attribute :name,       :string
@@ -150,7 +150,7 @@ user.eql? another # => true
 # Making some attributes private
 
 class User
-  extend ModelAttributes
+  extend ModelAttribute
   attribute :events, :string
   private :events=
 
@@ -171,7 +171,7 @@ end
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'model_attributes'
+gem 'model_attribute'
 ```
 
 And then execute:
@@ -180,11 +180,11 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install model_attributes
+    $ gem install model_attribute
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/model_attributes/fork )
+1. Fork it ( https://github.com/[my-github-username]/model_attribute/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

@@ -1,4 +1,4 @@
-module ModelAttributes
+module ModelAttribute
   module Json
     class << self
       def valid?(value)
