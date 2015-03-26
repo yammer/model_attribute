@@ -24,7 +24,7 @@ Also in favor of ModelAttribute:
 
 [virtus-gem]:https://github.com/solnic/virtus
 [am-dirty]:https://github.com/rails/rails/blob/v3.0.20/activemodel/lib/active_model/dirty.rb
-[source]:https://github.int.yammer.com/yammer/model_attribute/blob/master/lib/model_attributes.rb
+[source]:https://github.com/yammer/model_attribute/blob/master/lib/model_attribute.rb
 
 ## Usage
 
