@@ -22,6 +22,14 @@ class UserWithoutId
   end
 end
 
+class UserWithDefaults
+  extend ModelAttribute
+
+  attribute :name,            :string,  default: 'Charlie'
+  attribute :show_full_name,  :boolean, default: true
+  attribute :initial_deposit, :integer, default: 100
+end
+
 RSpec.describe "a class using ModelAttribute" do
   describe "class methods" do
     describe ".attribute" do
@@ -296,6 +304,70 @@ RSpec.describe "a class using ModelAttribute" do
       it "does not provide a profile? method" do
         expect(user).to_not respond_to(:profile?)
         expect { user.profile? }.to raise_error(NoMethodError)
+      end
+    end
+
+    describe 'setting defaults' do
+      let(:user) { UserWithDefaults.new }
+
+      context 'without changing defaults' do
+        it 'should return true for #show_full_name' do
+          expect(user.show_full_name).to eq(true)
+        end
+
+        it 'should return 100 for #initial_deposit' do
+          expect(user.initial_deposit).to eq(100)
+        end
+
+        it 'should return "Charlie" for #name' do
+          expect(user.name).to eq('Charlie')
+        end
+
+        it 'should return defaults in attributes hash' do
+          attrs = user.attributes
+          expect(attrs[:show_full_name]).to  eq(true)
+          expect(attrs[:initial_deposit]).to eq(100)
+          expect(attrs[:name]).to            eq('Charlie')
+        end
+
+        it 'should not return attributes with default values set in attributes_for_json' do
+          json_attrs = user.attributes_for_json
+          expect(json_attrs.key?('show_full_name')).to  eq(false)
+          expect(json_attrs.key?('initial_deposit')).to eq(false)
+          expect(json_attrs.key?('name')).to            eq(false)
+        end
+      end
+
+      context 'when overriding defaults' do
+        before :each do
+          user.show_full_name  = false
+          user.initial_deposit = 200
+          user.name            = 'Michael'
+        end
+
+        it 'should override #show_full_name' do
+          expect(user.show_full_name).to eq(false)
+        end
+
+        it 'should override #initial_deposit' do
+          expect(user.initial_deposit).to eq(200)
+        end
+
+        it 'should override #name' do
+          expect(user.name).to eq('Michael')
+        end
+
+        it 'should return modified values in attributes hash' do
+          attrs = user.attributes
+          expect(attrs[:show_full_name]).to  eq(false)
+          expect(attrs[:initial_deposit]).to eq(200)
+        end
+
+        it 'should return modified attributes in attributes_for_json' do
+          json_attrs = user.attributes_for_json
+          expect(json_attrs['show_full_name']).to  eq(false)
+          expect(json_attrs['initial_deposit']).to eq(200)
+        end
       end
     end
 

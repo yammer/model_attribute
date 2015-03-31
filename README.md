@@ -6,6 +6,7 @@ Simple attributes for a non-ActiveRecord model.
  - Type casting and checking.
  - Dirty tracking.
  - List attribute names and values.
+ - Default values for attributes
  - Handles integers, booleans, strings and times - a set of types that are very
    easy to persist to and parse from JSON.
  - Supports efficient serialization of attributes to JSON.
@@ -165,6 +166,23 @@ class User
   end
 end
 ```
+
+# Supporting default attributes
+
+class UserWithDefaults
+  extend ModelAttribute
+
+  attribute :name, :string, default: 'Charlie'
+end
+
+user = UserWithDefaults.new
+
+user.attributes
+# => {:name => 'Charlie', ...}
+
+user.name = 'Bob'
+user.attributes
+# => {:name => 'Bob', ...}
 
 ## Installation
 
