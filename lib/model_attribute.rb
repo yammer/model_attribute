@@ -1,5 +1,5 @@
 require "model_attribute/version"
-require "model_attribute/json"
+require "model_attribute/casts"
 require "model_attribute/errors"
 require "time"
 
@@ -56,7 +56,7 @@ module ModelAttribute
       type ||= self.class.instance_variable_get('@attribute_types')[name]
       raise InvalidAttributeNameError.new(name) unless type
 
-      value = cast(value, type)
+      value = Casts.cast(value, type)
       return if value == read_attribute(name)
 
       if changes.has_key? name
@@ -150,53 +150,6 @@ module ModelAttribute
         "#{key}: #{read_attribute(key).inspect}"
       end.join(', ')
       "#<#{self.class} #{attribute_string}>"
-    end
-
-    def cast(value, type)
-      return nil if value.nil?
-
-      case type
-      when :integer
-        int = Integer(value)
-        float = Float(value)
-        raise "Can't cast #{value.inspect} to an integer without loss of precision" unless int == float
-        int
-      when :boolean
-        if !!value == value
-          value
-        elsif value == 't'
-          true
-        elsif value == 'f'
-          false
-        else
-          raise "Can't cast #{value.inspect} to boolean"
-        end
-      when :time
-        case value
-        when Time
-          value
-        when Date, DateTime
-          value.to_time
-        when Integer
-          # Assume milliseconds since epoch.
-          Time.at(value / 1000.0)
-        when Numeric
-          # Numeric, but not an integer. Assume seconds since epoch.
-          Time.at(value)
-        else
-          Time.parse(value)
-        end
-      when :string
-        String(value)
-      when :json
-        if Json.valid?(value)
-          value
-        else
-          raise "JSON only supports nil, numeric, string, boolean and arrays and hashes of those."
-        end
-      else
-        raise UnsupportedTypeError.new(type)
-      end
     end
   end
 end
