@@ -1,4 +1,4 @@
-# ModelAttribute
+# ModelAttribute [![Build Status](https://travis-ci.org/yammer/model_attribute.svg?branch=master)](https://travis-ci.org/yammer/model_attribute)
 
 Simple attributes for a non-ActiveRecord model.
 
