@@ -23,19 +23,23 @@ class UserWithoutId
 end
 
 RSpec.describe "a class using ModelAttribute" do
-  describe ".attributes" do
-    it "returns an array of attribute names as symbols" do
-      expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile])
+  describe "class methods" do
+    describe ".attribute" do
+      context "passed an unrecognised type" do
+        it "raises an error" do
+          expect do
+            User.attribute :address, :custom_type
+          end.to raise_error(ModelAttribute::UnsupportedTypeError,
+                             "Unsupported type :custom_type. " +
+                             "Must be one of :integer, :boolean, :string, :time, :json.")
+        end
+      end
     end
-  end
 
-  describe "defining an attribute with an invalid type" do
-    it "raises an error" do
-      expect do
-        User.attribute :address, :custom_type
-      end.to raise_error(ModelAttribute::UnsupportedTypeError,
-                         "Unsupported type :custom_type. " +
-                         "Must be one of :integer, :boolean, :string, :time, :json.")
+    describe ".attributes" do
+      it "returns an array of attribute names as symbols" do
+        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile])
+      end
     end
   end
 
@@ -408,7 +412,7 @@ RSpec.describe "a class using ModelAttribute" do
       end
     end
 
-    describe "id_changed?" do
+    describe "#id_changed?" do
       context "with no changes" do
         it "returns false" do
           expect(user.id_changed?).to eq(false)
