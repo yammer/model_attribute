@@ -29,7 +29,7 @@ watch ("Guardfile") do
   exit 0
 end
 
-guard :rspec, cmd: "bundle exec rspec --format=Nc --format=documentation" do
+guard :rspec, cmd: "bundle exec rspec --format=Nc --format=documentation", all_on_start: true do
   require "guard/rspec/dsl"
   dsl = Guard::RSpec::Dsl.new(self)
 
