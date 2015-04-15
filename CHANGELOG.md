@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.1.0
+
+- **New feature**: default values.  Allows you to specify a default value like
+  so:
+```
+class User
+  attribute :name, :string, default: 'Michelle'
+end
+
+User.new.name
+# => 'Michelle'
+```
+
 ## 2.0.0
 
 - **Breaking change**: Rename to `ModelAttribute` (no trailing 's') to avoid name

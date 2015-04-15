@@ -1,10 +1,11 @@
 class User
   extend ModelAttribute
-  attribute :id,         :integer
-  attribute :paid,       :boolean
-  attribute :name,       :string
-  attribute :created_at, :time
-  attribute :profile,    :json
+  attribute :id,            :integer
+  attribute :paid,          :boolean
+  attribute :name,          :string
+  attribute :created_at,    :time
+  attribute :profile,       :json
+  attribute :reward_points, :integer, default: 0
 
   def initialize(attributes = {})
     set_attributes(attributes)
@@ -38,7 +39,13 @@ RSpec.describe "a class using ModelAttribute" do
 
     describe ".attributes" do
       it "returns an array of attribute names as symbols" do
-        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile])
+        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile, :reward_points])
+      end
+    end
+
+    describe ".attribute_defaults" do
+      it "returns a hash of attributes that have non-nil defaults" do
+        expect(User.attribute_defaults).to eq({reward_points: 0})
       end
     end
   end
@@ -299,6 +306,12 @@ RSpec.describe "a class using ModelAttribute" do
       end
     end
 
+    describe 'a defaulted attribute (reward_points)' do
+      it "returns the default when unset" do
+        expect(user.reward_points).to eq(0)
+      end
+    end
+
     describe "#write_attribute" do
       it "does the same casting as using the writer method" do
         user.write_attribute(:id, '3')
@@ -323,6 +336,12 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.read_attribute(:id)).to be_nil
       end
 
+      context "for an attribute with a default" do
+        it "returns the default if the attribute has not been set" do
+          expect(user.read_attribute(:reward_points)).to eq(0)
+        end
+      end
+
       it "raises an error if passed an invalid attribute name" do
         expect do
           user.read_attribute(:spelling_mistake)
@@ -334,7 +353,7 @@ RSpec.describe "a class using ModelAttribute" do
     describe "#changes" do
       let(:changes) { user.changes }
 
-      context "for a model instance created with no attributes" do
+      context "for a model instance created with no attributes except defaults" do
         it "is empty" do
           expect(changes).to be_empty
         end
@@ -474,8 +493,18 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.attributes_for_json).to include("profile" => json)
       end
 
-      it "omits attributes with a nil value" do
-        expect(user.attributes_for_json).to_not include("name")
+      it "omits attributes still set to the default value" do
+        expect(user.attributes_for_json).to_not include("name", "reward_points")
+      end
+
+      it "includes an attribute changed from its default value" do
+        user.name = "Fred"
+        expect(user.attributes_for_json).to include("name" => "Fred")
+      end
+
+      it "includes an attribute changed from its default value to nil" do
+        user.reward_points = nil
+        expect(user.attributes_for_json).to include("reward_points" => nil)
       end
     end
 
@@ -535,12 +564,16 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.inspect).to include('profile: {"interests"=>["coding", "social networks"], "rank"=>15}')
       end
 
+      it "includes defaulted attributes" do
+        expect(user.inspect).to include('reward_points: 0')
+      end
+
       it "includes the class name" do
         expect(user.inspect).to include("User")
       end
 
       it "looks like '#<User id: 1, paid: true, name: ..., created_at: ...>'" do
-        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}>")
+        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}, reward_points: 0>")
       end
     end
 

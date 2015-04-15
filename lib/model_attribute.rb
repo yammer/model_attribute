@@ -8,17 +8,19 @@ module ModelAttribute
 
   def self.extended(base)
     base.send(:include, InstanceMethods)
-    base.instance_variable_set('@attribute_names', [])
-    base.instance_variable_set('@attribute_types', {})
+    base.instance_variable_set('@attribute_names',    [])
+    base.instance_variable_set('@attribute_types',    {})
+    base.instance_variable_set('@attribute_defaults', {})
   end
 
-  def attribute(name, type)
+  def attribute(name, type, opts = {})
     name = name.to_sym
     type = type.to_sym
     raise UnsupportedTypeError.new(type) unless SUPPORTED_TYPES.include?(type)
 
-    @attribute_names << name
-    @attribute_types[name] = type
+    @attribute_names          << name
+    @attribute_types[name]    = type
+    @attribute_defaults[name] = opts[:default] if opts.key?(:default)
 
     self.class_eval(<<-CODE, __FILE__, __LINE__ + 1)
       def #{name}=(value)
@@ -45,6 +47,10 @@ module ModelAttribute
 
   def attributes
     @attribute_names
+  end
+
+  def attribute_defaults
+    @attribute_defaults
   end
 
   module InstanceMethods
@@ -80,6 +86,8 @@ module ModelAttribute
         instance_variable_get(ivar_name)
       elsif !self.class.attributes.include?(name.to_sym)
         raise InvalidAttributeNameError.new(name)
+      else
+        self.class.attribute_defaults[name.to_sym]
       end
     end
 
@@ -106,19 +114,19 @@ module ModelAttribute
     alias_method :eql?, :==
 
     def changes
-      @changes ||= {} #HashWithIndifferentAccess.new
+      @changes ||= {}
     end
 
     # Attributes suitable for serializing to a JSON string.
     #
     #  - Attribute keys are strings (for 'strict' JSON dumping).
-    #  - Attributes with a nil value are omitted to speed serialization.
+    #  - Attributes with a default or nil value are omitted to speed serialization.
     #  - :time attributes are serialized as an Integer giving the number of
     #    milliseconds since the epoch.
     def attributes_for_json
       self.class.attributes.each_with_object({}) do |name, attributes|
         value = read_attribute(name)
-        unless value.nil?
+        if value != self.class.attribute_defaults[name.to_sym]
           value = (value.to_f * 1000).to_i if value.is_a? Time
           attributes[name.to_s] = value
         end

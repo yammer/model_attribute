@@ -6,6 +6,7 @@ Simple attributes for a non-ActiveRecord model.
  - Type casting and checking.
  - Dirty tracking.
  - List attribute names and values.
+ - Default values for attributes
  - Handles integers, booleans, strings and times - a set of types that are very
    easy to persist to and parse from JSON.
  - Supports efficient serialization of attributes to JSON.
@@ -164,6 +165,31 @@ class User
     events += new_event
   end
 end
+
+# Supporting default attributes
+
+class UserWithDefaults
+  extend ModelAttribute
+
+  attribute :name, :string, default: 'Charlie'
+end
+
+UserWithDefaults.attribute_defaults # => {:name=>"Charlie"}
+
+user = UserWithDefaults.new
+user.name # => "Charlie"
+user.read_attribute(:name) # => "Charlie"
+user.attributes # => {:name=>"Charlie"}
+# attributes_for_json omits defaults to keep the JSON compact
+user.attributes_for_json # => {}
+# you can add them back in if you need them
+user.attributes_for_json.merge(user.class.attribute_defaults) # => {:name=>"Charlie"}
+# A default isn't a change
+user.changes # => {}
+user.changes_for_json # => {}
+
+user.name = 'Bob'
+user.attributes # => {:name=>"Bob"}
 ```
 
 ## Installation
