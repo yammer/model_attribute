@@ -1,10 +1,11 @@
 class User
   extend ModelAttribute
-  attribute :id,         :integer
-  attribute :paid,       :boolean
-  attribute :name,       :string
-  attribute :created_at, :time
-  attribute :profile,    :json
+  attribute :id,            :integer
+  attribute :paid,          :boolean
+  attribute :name,          :string
+  attribute :created_at,    :time
+  attribute :profile,       :json
+  attribute :reward_points, :integer, default: 0
 
   def initialize(attributes = {})
     set_attributes(attributes)
@@ -20,14 +21,6 @@ class UserWithoutId
   def initialize(attributes = {})
     set_attributes(attributes)
   end
-end
-
-class UserWithDefaults
-  extend ModelAttribute
-
-  attribute :name,            :string,  default: 'Charlie'
-  attribute :show_full_name,  :boolean, default: true
-  attribute :initial_deposit, :integer, default: 100
 end
 
 RSpec.describe "a class using ModelAttribute" do
@@ -46,7 +39,13 @@ RSpec.describe "a class using ModelAttribute" do
 
     describe ".attributes" do
       it "returns an array of attribute names as symbols" do
-        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile])
+        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile, :reward_points])
+      end
+    end
+
+    describe ".attribute_defaults" do
+      it "returns a hash of attributes that have non-nil defaults" do
+        expect(User.attribute_defaults).to eq({reward_points: 0})
       end
     end
   end
@@ -307,67 +306,9 @@ RSpec.describe "a class using ModelAttribute" do
       end
     end
 
-    describe 'setting defaults' do
-      let(:user) { UserWithDefaults.new }
-
-      context 'without changing defaults' do
-        it 'should return true for #show_full_name' do
-          expect(user.show_full_name).to eq(true)
-        end
-
-        it 'should return 100 for #initial_deposit' do
-          expect(user.initial_deposit).to eq(100)
-        end
-
-        it 'should return "Charlie" for #name' do
-          expect(user.name).to eq('Charlie')
-        end
-
-        it 'should return defaults in attributes hash' do
-          attrs = user.attributes
-          expect(attrs[:show_full_name]).to  eq(true)
-          expect(attrs[:initial_deposit]).to eq(100)
-          expect(attrs[:name]).to            eq('Charlie')
-        end
-
-        it 'should not return attributes with default values set in attributes_for_json' do
-          json_attrs = user.attributes_for_json
-          expect(json_attrs.key?('show_full_name')).to  eq(false)
-          expect(json_attrs.key?('initial_deposit')).to eq(false)
-          expect(json_attrs.key?('name')).to            eq(false)
-        end
-      end
-
-      context 'when overriding defaults' do
-        before :each do
-          user.show_full_name  = false
-          user.initial_deposit = 200
-          user.name            = 'Michael'
-        end
-
-        it 'should override #show_full_name' do
-          expect(user.show_full_name).to eq(false)
-        end
-
-        it 'should override #initial_deposit' do
-          expect(user.initial_deposit).to eq(200)
-        end
-
-        it 'should override #name' do
-          expect(user.name).to eq('Michael')
-        end
-
-        it 'should return modified values in attributes hash' do
-          attrs = user.attributes
-          expect(attrs[:show_full_name]).to  eq(false)
-          expect(attrs[:initial_deposit]).to eq(200)
-        end
-
-        it 'should return modified attributes in attributes_for_json' do
-          json_attrs = user.attributes_for_json
-          expect(json_attrs['show_full_name']).to  eq(false)
-          expect(json_attrs['initial_deposit']).to eq(200)
-        end
+    describe 'a defaulted attribute (reward_points)' do
+      it "returns the default when unset" do
+        expect(user.reward_points).to eq(0)
       end
     end
 
@@ -395,6 +336,12 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.read_attribute(:id)).to be_nil
       end
 
+      context "for an attribute with a default" do
+        it "returns the default if the attribute has not been set" do
+          expect(user.read_attribute(:reward_points)).to eq(0)
+        end
+      end
+
       it "raises an error if passed an invalid attribute name" do
         expect do
           user.read_attribute(:spelling_mistake)
@@ -406,7 +353,7 @@ RSpec.describe "a class using ModelAttribute" do
     describe "#changes" do
       let(:changes) { user.changes }
 
-      context "for a model instance created with no attributes" do
+      context "for a model instance created with no attributes except defaults" do
         it "is empty" do
           expect(changes).to be_empty
         end
@@ -546,8 +493,18 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.attributes_for_json).to include("profile" => json)
       end
 
-      it "omits attributes with a nil value" do
-        expect(user.attributes_for_json).to_not include("name")
+      it "omits attributes still set to the default value" do
+        expect(user.attributes_for_json).to_not include("name", "reward_points")
+      end
+
+      it "includes an attribute changed from its default value" do
+        user.name = "Fred"
+        expect(user.attributes_for_json).to include("name" => "Fred")
+      end
+
+      it "includes an attribute changed from its default value to nil" do
+        user.reward_points = nil
+        expect(user.attributes_for_json).to include("reward_points" => nil)
       end
     end
 
@@ -607,12 +564,16 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.inspect).to include('profile: {"interests"=>["coding", "social networks"], "rank"=>15}')
       end
 
+      it "includes defaulted attributes" do
+        expect(user.inspect).to include('reward_points: 0')
+      end
+
       it "includes the class name" do
         expect(user.inspect).to include("User")
       end
 
       it "looks like '#<User id: 1, paid: true, name: ..., created_at: ...>'" do
-        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}>")
+        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}, reward_points: 0>")
       end
     end
 
