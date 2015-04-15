@@ -165,7 +165,6 @@ class User
     events += new_event
   end
 end
-```
 
 # Supporting default attributes
 
@@ -175,14 +174,23 @@ class UserWithDefaults
   attribute :name, :string, default: 'Charlie'
 end
 
-user = UserWithDefaults.new
+UserWithDefaults.attribute_defaults # => {:name=>"Charlie"}
 
-user.attributes
-# => {:name => 'Charlie', ...}
+user = UserWithDefaults.new
+user.name # => "Charlie"
+user.read_attribute(:name) # => "Charlie"
+user.attributes # => {:name=>"Charlie"}
+# attributes_for_json omits defaults to keep the JSON compact
+user.attributes_for_json # => {}
+# you can add them back in if you need them
+user.attributes_for_json.merge(user.class.attribute_defaults) # => {:name=>"Charlie"}
+# A default isn't a change
+user.changes # => {}
+user.changes_for_json # => {}
 
 user.name = 'Bob'
-user.attributes
-# => {:name => 'Bob', ...}
+user.attributes # => {:name=>"Bob"}
+```
 
 ## Installation
 
