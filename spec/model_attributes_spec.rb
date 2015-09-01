@@ -69,7 +69,7 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "raises when passed a float with non-zero decimal part" do
-        expect { user.id = 3.3 }.to raise_error
+        expect { user.id = 3.3 }.to raise_error(RuntimeError)
       end
 
       it "parses an integer string" do
@@ -78,7 +78,8 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "raises if passed a string it can't parse" do
-        expect { user.id = '3a' }.to raise_error
+        expect { user.id = '3a' }.to raise_error(ArgumentError,
+                                                 'invalid value for Integer(): "3a"')
       end
 
       it "stores nil" do
@@ -119,7 +120,8 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "raises if passed a string it can't parse" do
-        expect { user.paid = '3a' }.to raise_error
+        expect { user.paid = '3a' }.to raise_error(RuntimeError,
+                                                   'Can\'t cast "3a" to boolean')
       end
 
       it "stores nil" do
@@ -204,7 +206,8 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "raises for unparseable strings" do
-        expect { user.created_at = "Today, innit?" }.to raise_error
+        expect { user.created_at = "Today, innit?" }.to raise_error(ArgumentError,
+                                                        'no time information in "Today, innit?"')
       end
 
       it "converts Dates to Time" do
@@ -279,19 +282,23 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "raises when passed an object not supported by JSON" do
-        expect { user.profile = Object.new }.to raise_error
+        expect { user.profile = Object.new }.to raise_error(RuntimeError,
+          "JSON only supports nil, numeric, string, boolean and arrays and hashes of those.")
       end
 
       it "raises when passed a hash with a non-string key" do
-        expect { user.profile = {1 => 'first'} }.to raise_error
+        expect { user.profile = {1 => 'first'} }.to raise_error(RuntimeError,
+          "JSON only supports nil, numeric, string, boolean and arrays and hashes of those.")
       end
 
       it "raises when passed a hash with an unsupported value" do
-        expect { user.profile = {'first' => :symbol} }.to raise_error
+        expect { user.profile = {'first' => :symbol} }.to raise_error(RuntimeError,
+          "JSON only supports nil, numeric, string, boolean and arrays and hashes of those.")
       end
 
       it "raises when passed an array with an unsupported value" do
-        expect { user.profile = [1, 2, nil, :symbol] }.to raise_error
+        expect { user.profile = [1, 2, nil, :symbol] }.to raise_error(RuntimeError,
+          "JSON only supports nil, numeric, string, boolean and arrays and hashes of those.")
       end
 
       it "stores nil" do
