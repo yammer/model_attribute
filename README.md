@@ -12,7 +12,7 @@ Simple attributes for a non-ActiveRecord model.
  - Supports efficient serialization of attributes to JSON.
  - Mass assignment - handy for initializers.
 
-Why not [Virtus][virtus-gem]?  Virtus doesn't provide attribute tracking, and
+Why not [Virtus][virtus-gem]?  Virtus doesn't provide dirty tracking, and
 doesn't integrate with [ActiveModel::Dirty][am-dirty].  So if you're not using
 ActiveRecord, but you need attributes with dirty tracking, ModelAttribute may be
 what you're after.  For example, it works very well for a model that fronts an
@@ -24,7 +24,7 @@ Also in favor of ModelAttribute:
  - It supports efficient serialization and deserialization to/from JSON.
 
 [virtus-gem]:https://github.com/solnic/virtus
-[am-dirty]:https://github.com/rails/rails/blob/v3.0.20/activemodel/lib/active_model/dirty.rb
+[am-dirty]:https://github.com/rails/rails/blob/master/activemodel/lib/active_model/dirty.rb
 [source]:https://github.com/yammer/model_attribute/blob/master/lib/model_attribute.rb
 
 ## Usage
