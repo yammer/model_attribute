@@ -126,8 +126,8 @@ Oj.dump(user.attributes_for_json, mode: :strict)
 # => "{\"id\":5,\"paid\":true,\"name\":\"Fred\",\"created_at\":1421171317762}"
 user2 = User.new(Oj.load(json, strict: true))
 
-# Change tracking.  A much smaller set of function than that provided by
-# ActiveModel::Dity.
+# Change tracking.  A much smaller set of functions than that provided by
+# ActiveModel::Dirty.
 user.changes # => {:id=>[nil, 5], :paid=>[nil, true], :created_at=>[nil, 2015-01-08 15:57:05 +0000], :name=>[nil, "Fred"]}
 user.name_changed?  # => true
 # If you need the new values to send as a PUT to a web service
@@ -137,7 +137,7 @@ user.changes_for_json # => {"id"=>5, "paid"=>true, "name"=>"Fred", "created_at"=
 user.changes.clear
 user.changes # => {}
 
-# Equality of all the attribute values match
+# Equality if all the attribute values match
 another = User.new
 another.id = 5
 another.paid = true
@@ -182,7 +182,7 @@ user.read_attribute(:name) # => "Charlie"
 user.attributes # => {:name=>"Charlie"}
 # attributes_for_json omits defaults to keep the JSON compact
 user.attributes_for_json # => {}
-# you can add them back in if you need them
+# You can add them back in if you need them
 user.attributes_for_json.merge(user.class.attribute_defaults) # => {:name=>"Charlie"}
 # A default isn't a change
 user.changes # => {}
