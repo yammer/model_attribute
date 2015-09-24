@@ -79,7 +79,7 @@ RSpec.describe "a class using ModelAttribute" do
 
       it "raises if passed a string it can't parse" do
         expect { user.id = '3a' }.to raise_error(ArgumentError,
-                                                 'invalid value for Integer(): "3a"')
+                                                 /invalid value for Integer.*: "3a"/)
       end
 
       it "stores nil" do
