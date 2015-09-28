@@ -1,4 +1,4 @@
-# ModelAttribute [![Build Status](https://travis-ci.org/yammer/model_attribute.svg?branch=master)](https://travis-ci.org/yammer/model_attribute)
+# ModelAttribute [![Gem Version](https://badge.fury.io/rb/model_attribute.svg)](http://badge.fury.io/rb/model_attribute) [![Build Status](https://travis-ci.org/yammer/model_attribute.svg?branch=master)](https://travis-ci.org/yammer/model_attribute)
 
 Simple attributes for a non-ActiveRecord model.
 
