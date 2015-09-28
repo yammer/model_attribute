@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.0
+
+- **Breaking change**: All casting errors raise `ArgumentError`. Previously some
+  errors during casting would raise `RuntimeError`.
+  Thanks to [@gotascii](https://github.com/gotascii) for the report.
+
 ## 2.1.0
 
 - **New feature**: default values.  Allows you to specify a default value like

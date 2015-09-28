@@ -8,7 +8,7 @@ module ModelAttribute
         when :integer
           int = Integer(value)
           float = Float(value)
-          raise "Can't cast #{value.inspect} to an integer without loss of precision" unless int == float
+          raise ArgumentError, "Can't cast #{value.inspect} to an integer without loss of precision" unless int == float
           int
         when :boolean
           if !!value == value
@@ -18,7 +18,7 @@ module ModelAttribute
           elsif value == 'f'
             false
           else
-            raise "Can't cast #{value.inspect} to boolean"
+            raise ArgumentError, "Can't cast #{value.inspect} to boolean"
           end
         when :time
           case value
@@ -41,7 +41,7 @@ module ModelAttribute
           if valid_json?(value)
             value
           else
-            raise "JSON only supports nil, numeric, string, boolean and arrays and hashes of those."
+            raise ArgumentError, "JSON only supports nil, numeric, string, boolean and arrays and hashes of those."
           end
         else
           raise UnsupportedTypeError.new(type)

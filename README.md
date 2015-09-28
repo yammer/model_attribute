@@ -103,7 +103,7 @@ user.grades # => ["A", "A*", "C"]
 user.grades = 'AAB'
 user.grades # => "AAB"
 user.grades = Time.now
-# => RuntimeError: JSON only supports nil, numeric, string, boolean and arrays and hashes of those.
+# => ArgumentError: JSON only supports nil, numeric, string, boolean and arrays and hashes of those.
 
 # read_attribute and write_attribute methods
 user.read_attribute(:created_at)
