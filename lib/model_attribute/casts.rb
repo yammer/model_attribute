@@ -10,6 +10,8 @@ module ModelAttribute
           float = Float(value)
           raise ArgumentError, "Can't cast #{value.inspect} to an integer without loss of precision" unless int == float
           int
+        when :float
+          Float(value)
         when :boolean
           if !!value == value
             value

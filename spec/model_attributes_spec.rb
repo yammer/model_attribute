@@ -6,6 +6,7 @@ class User
   attribute :created_at,    :time
   attribute :profile,       :json
   attribute :reward_points, :integer, default: 0
+  attribute :win_rate,      :float
 
   def initialize(attributes = {})
     set_attributes(attributes)
@@ -32,14 +33,14 @@ RSpec.describe "a class using ModelAttribute" do
             User.attribute :address, :custom_type
           end.to raise_error(ModelAttribute::UnsupportedTypeError,
                              "Unsupported type :custom_type. " +
-                             "Must be one of :integer, :boolean, :string, :time, :json.")
+                             "Must be one of :integer, :float, :boolean, :string, :time, :json.")
         end
       end
     end
 
     describe ".attributes" do
       it "returns an array of attribute names as symbols" do
-        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile, :reward_points])
+        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile, :reward_points, :win_rate])
       end
     end
 
@@ -91,6 +92,18 @@ RSpec.describe "a class using ModelAttribute" do
       it "does not provide an id? method" do
         expect(user).to_not respond_to(:id?)
         expect { user.id? }.to raise_error(NoMethodError)
+      end
+    end
+
+    describe "a float attribute (win_rate)" do
+      it "stores a float" do
+        user.win_rate = 35.62
+        expect(user.win_rate).to eq(35.62)
+      end
+      
+      it "parses a float string" do
+        user.win_rate = 35.62
+        expect(user.win_rate).to eq(35.62)
       end
     end
 
@@ -558,7 +571,8 @@ RSpec.describe "a class using ModelAttribute" do
                  name: "Fred",
                  created_at: "2014-12-25 08:00",
                  paid: true,
-                 profile: {'interests' => ['coding', 'social networks'], 'rank' => 15})
+                 profile: {'interests' => ['coding', 'social networks'], 'rank' => 15},
+                 win_rate: 35.62)
       end
 
       it "includes integer attributes as 'name: value'" do
@@ -590,7 +604,7 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "looks like '#<User id: 1, paid: true, name: ..., created_at: ...>'" do
-        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}, reward_points: 0>")
+        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}, reward_points: 0, win_rate: 35.62>")
       end
     end
 
