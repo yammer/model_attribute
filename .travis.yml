@@ -1,4 +1,6 @@
 language: ruby
+install:
+- bundle install --without interactive
 rvm:
   - "1.9.3"
   - "2.1.10"
