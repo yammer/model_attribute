@@ -13,9 +13,9 @@ module ModelAttribute
         when :boolean
           if !!value == value
             value
-          elsif value == 't'
+          elsif value == 't' || value == 'true'
             true
-          elsif value == 'f'
+          elsif value == 'f' || value == 'false'
             false
           else
             raise ArgumentError, "Can't cast #{value.inspect} to boolean"
