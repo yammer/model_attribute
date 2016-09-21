@@ -119,6 +119,16 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.paid).to eq(false)
       end
 
+      it "parses 'false' to false" do
+        user.paid = 'false'
+        expect(user.paid).to eq(false)
+      end
+
+      it "parses 'true' to true" do
+        user.paid = 'true'
+        expect(user.paid).to eq(true)
+      end
+
       it "raises if passed a string it can't parse" do
         expect { user.paid = '3a' }.to raise_error(ArgumentError,
                                                    'Can\'t cast "3a" to boolean')
