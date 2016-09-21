@@ -71,9 +71,13 @@ user.paid = true
 user.paid?  # => true
 
 # Conversion from strings used by databases.
-user.paid = 'f' || user.paid = 'false'
+user.paid = 'f'
 user.paid # => false
-user.paid = 't' || user.paid = 'true'
+user.paid = 't'
+user.paid # => true
+user.paid = 'false'
+user.paid # => false
+user.paid = 'true'
 user.paid # => true
 
 # A :time attribute
