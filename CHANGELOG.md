@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.0
+
+- Allow strings 'true' and 'false' to be assigned to boolean attributes and be
+  cast as expected.
+
 ## 3.0.0
 
 - **Breaking change**: All casting errors raise `ArgumentError`. Previously some
