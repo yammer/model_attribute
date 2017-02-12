@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
     Attributes for non-ActiveRecord models.
     Smaller and simpler than Virtus, and adds dirty tracking.
   EOF
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/yammer/model_attribute"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
