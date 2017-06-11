@@ -100,7 +100,7 @@ RSpec.describe "a class using ModelAttribute" do
         user.win_rate = 35.62
         expect(user.win_rate).to eq(35.62)
       end
-      
+
       it "parses a float string" do
         user.win_rate = 35.62
         expect(user.win_rate).to eq(35.62)
