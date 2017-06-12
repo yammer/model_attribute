@@ -444,7 +444,7 @@ RSpec.describe "a class using ModelAttribute" do
 
       it "serializes time attributes as JSON integer" do
         user.created_at = Time.now
-        expect(changes_for_json).to include("created_at" => instance_of(Fixnum))
+        expect(changes_for_json).to include("created_at" => kind_of(Integer))
       end
     end
 
@@ -496,7 +496,7 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "serializes time attributes as JSON integer" do
-        expect(user.attributes_for_json).to include("created_at" => instance_of(Fixnum))
+        expect(user.attributes_for_json).to include("created_at" => kind_of(Integer))
       end
 
       it "serializes string attributes as JSON string" do
