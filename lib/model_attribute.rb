@@ -4,7 +4,7 @@ require "model_attribute/errors"
 require "time"
 
 module ModelAttribute
-  SUPPORTED_TYPES = [:integer, :boolean, :string, :time, :json]
+  SUPPORTED_TYPES = [:integer, :float, :boolean, :string, :time, :json]
 
   def self.extended(base)
     base.send(:include, InstanceMethods)

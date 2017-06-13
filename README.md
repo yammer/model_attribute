@@ -212,6 +212,12 @@ Or install it yourself as:
 
     $ gem install model_attribute
 
+## Testing
+
+Running specs:
+
+    $ TZ=UTC rspec
+
 ## Contributing
 
 1. [Fork it](https://github.com/yammer/model_attribute/fork)
