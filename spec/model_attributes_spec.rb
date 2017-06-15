@@ -225,7 +225,7 @@ RSpec.describe "a class using ModelAttribute" do
 
       it "parses strings to date/times" do
         user.created_at = "2014-12-25 14:00:00 +0100"
-        expect(user.created_at).to eq(Time.new(2014, 12, 25, 13, 00, 00))
+        expect(user.created_at).to eq(Time.new(2014, 12, 25, 13, 00, 00, 0))
       end
 
       it "raises for unparseable strings" do
@@ -239,8 +239,8 @@ RSpec.describe "a class using ModelAttribute" do
       end
 
       it "converts DateTime to Time" do
-        user.created_at = DateTime.parse("2014-12-25 13:00:45")
-        expect(user.created_at).to eq(Time.new(2014, 12, 25, 13, 00, 45))
+        user.created_at = DateTime.parse("2014-12-25 13:00:45 +0000")
+        expect(user.created_at.utc).to eq(Time.new(2014, 12, 25, 13, 00, 45, 0))
       end
 
       it "stores nil" do
@@ -569,7 +569,7 @@ RSpec.describe "a class using ModelAttribute" do
       let(:user) do
         User.new(id: 1,
                  name: "Fred",
-                 created_at: "2014-12-25 08:00",
+                 created_at: "2014-12-25 08:00 +0000",
                  paid: true,
                  profile: {'interests' => ['coding', 'social networks'], 'rank' => 15},
                  win_rate: 35.62)

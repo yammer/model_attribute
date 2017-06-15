@@ -216,7 +216,7 @@ Or install it yourself as:
 
 Running specs:
 
-    $ TZ=UTC rspec
+    $ rspec
 
 ## Contributing
 
