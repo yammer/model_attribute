@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.2.0
+
+- Support `Float` type with `:float`.
+- Tested with Ruby 2.4.
+
 ## 3.1.0
 
 - Allow strings 'true' and 'false' to be assigned to boolean attributes and be
