@@ -4,19 +4,35 @@ require "model_attribute/errors"
 require "time"
 
 module ModelAttribute
-  SUPPORTED_TYPES = [:integer, :float, :boolean, :string, :time, :json]
-
   def self.extended(base)
     base.send(:include, InstanceMethods)
     base.instance_variable_set('@attribute_names',    [])
     base.instance_variable_set('@attribute_types',    {})
     base.instance_variable_set('@attribute_defaults', {})
+    base.class_eval do
+      define_method(:initialize) do |attributes|
+        set_attributes(attributes, true)
+      end
+    end
   end
 
-  def attribute(name, type, opts = {})
+  def attribute(name, type = :string, opts = {})
     name = name.to_sym
-    type = type.to_sym
-    raise UnsupportedTypeError.new(type) unless SUPPORTED_TYPES.include?(type)
+
+    classify = -> (value) do
+      value.to_s.split('_').collect(&:capitalize).join
+    end
+
+    type = if type.is_a?(Symbol)
+             type.to_sym
+           elsif type.is_a?(Class)
+             type.to_s
+           else
+             classify.call(type.to_s)
+           end
+
+    raise UnsupportedTypeError.new(type) unless Casts::SUPPORTED_TYPES.include?(type) ||
+      (Object.const_defined?(type) rescue Object.const_defined?(classify.call(type)))
 
     @attribute_names          << name
     @attribute_types[name]    = type

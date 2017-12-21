@@ -36,11 +36,19 @@ RSpec.describe "a class using ModelAttribute" do
                              "Must be one of :integer, :float, :boolean, :string, :time, :json.")
         end
       end
+
+      context "passed unsupported, but defined type" do
+        it "should accept defined type" do
+          address_class = Object.const_set "Address", Class.new
+          User.attribute :address, address_class
+          expect(User.attributes).to include(:address)
+        end
+      end
     end
 
     describe ".attributes" do
       it "returns an array of attribute names as symbols" do
-        expect(User.attributes).to eq([:id, :paid, :name, :created_at, :profile, :reward_points, :win_rate])
+        expect(User.attributes).to include(*[:id, :paid, :name, :created_at, :profile, :reward_points, :win_rate])
       end
     end
 
@@ -603,8 +611,14 @@ RSpec.describe "a class using ModelAttribute" do
         expect(user.inspect).to include("User")
       end
 
+      it 'should be able to take a defined type attribute' do
+        user.address = Address.new
+        expect(user.address).not_to be_nil
+        expect(user.address.class).to eql Address
+      end
+
       it "looks like '#<User id: 1, paid: true, name: ..., created_at: ...>'" do
-        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}, reward_points: 0, win_rate: 35.62>")
+        expect(user.inspect).to eq("#<User id: 1, paid: true, name: \"Fred\", created_at: 2014-12-25 08:00:00 +0000, profile: {\"interests\"=>[\"coding\", \"social networks\"], \"rank\"=>15}, reward_points: 0, win_rate: 35.62, address: nil>")
       end
     end
 
@@ -672,6 +686,17 @@ RSpec.describe "a class using ModelAttribute" do
 
         it "#eql? returns true" do
           expect(u1).to eql(u2)
+        end
+      end
+    end
+
+    describe 'defined class passing' do
+      context 'using defined class' do
+        it "should be have an attribute of specific type" do
+          klass = Object.const_set "SomeClass", Class.new
+          User.attribute :new_field, klass
+          user = User.new new_field: klass.new
+          expect(user.new_field.class).to eql klass
         end
       end
     end
