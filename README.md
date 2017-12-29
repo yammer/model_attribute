@@ -7,7 +7,7 @@ Simple attributes for a non-ActiveRecord model.
  - Dirty tracking.
  - List attribute names and values.
  - Default values for attributes
- - Handles integers, booleans, strings and times - a set of types that are very
+ - Handles integers, floats, booleans, strings and times - a set of types that are very
    easy to persist to and parse from JSON.
  - Supports efficient serialization of attributes to JSON.
  - Mass assignment - handy for initializers.
