@@ -27,6 +27,19 @@ Also in favor of ModelAttribute:
 [am-dirty]:https://github.com/rails/rails/blob/master/activemodel/lib/active_model/dirty.rb
 [source]:https://github.com/yammer/model_attribute/blob/master/lib/model_attribute.rb
 
+## Integrating with Rails
+
+If you're using ModelAttribute in a Rails application, you will probably want to
+augment your model with other methods to make it behave more like
+`ActiveRecord`.  `ActiveModel` provides a very useful set of mixins,
+described in the [Rails guide][active-model-guide].  You can also see an example
+of the methods we found useful at Yammer described in [this blog
+post][yammer-blog-post], with full source in [this Gist][active-record-mimic].
+
+[active-model-guide]:https://guides.rubyonrails.org/active_model_basics.html
+[yammer-blog-post]:https://medium.com/yammer-engineering/activerecord-stole-my-data-and-now-i-want-it-back-3041ac4eb163
+[active-record-mimic]:https://gist.github.com/dwaller/5474304cfea354a9701d
+
 ## Usage
 
 ```ruby
